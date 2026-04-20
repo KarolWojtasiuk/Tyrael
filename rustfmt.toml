@@ -1,0 +1,5 @@
+reorder_modules = true
+reorder_imports = true
+group_imports = "One"
+imports_granularity = "Module"
+imports_layout = "HorizontalVertical"

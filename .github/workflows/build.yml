@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Run cargo test
+        run: cargo test
+
+  clippy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
