@@ -1,0 +1,9 @@
+[book]
+title = "Tyrael"
+authors = ["Karol Wojtasiuk"]
+
+[output.html]
+default-theme = "ayu"
+preferred-dark-theme = "ayu"
+git-repository-url = "https://github.com/KarolWojtasiuk/Tyrael"
+edit-url-template = "https://github.com/KarolWojtasiuk/Tyrael/edit/master/docs/{path}"

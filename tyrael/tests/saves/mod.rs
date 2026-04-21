@@ -1,0 +1,315 @@
+use tyrael::character::CharacterClass;
+
+#[allow(unused)]
+pub struct TestSave {
+    pub bytes: &'static [u8],
+    pub filename: &'static str,
+    pub game: TestSaveGame,
+    pub version: &'static str,
+    pub expansion: TestSaveCharacterExpansion,
+    pub class: CharacterClass,
+    pub stage: TestSaveCharacterStage,
+    pub name: Option<&'static str>,
+}
+
+#[derive(PartialEq)]
+pub enum TestSaveGame {
+    // Official
+    Classic,
+    ClassicLoD,
+    Resurrected,
+    // Modded
+    ProjectDiablo2,
+}
+
+#[derive(PartialEq)]
+pub enum TestSaveCharacterExpansion {
+    Classic,
+    LoD,
+    RotW,
+}
+
+#[derive(PartialEq)]
+pub enum TestSaveCharacterStage {
+    Starter,
+}
+
+macro_rules! include_save {
+    ($game:ident, $version:literal, $expansion:ident, $class:ident, $stage:ident) => {
+        TestSave {
+            bytes: include_bytes!(concat!(
+                stringify!($game),
+                "/",
+                $version,
+                "/",
+                stringify!($expansion),
+                "_",
+                stringify!($class),
+                "/",
+                stringify!($stage),
+                ".d2s"
+            )),
+            filename: concat!(
+                stringify!($game),
+                "/",
+                $version,
+                "/",
+                stringify!($expansion),
+                "_",
+                stringify!($class),
+                "/",
+                stringify!($stage),
+                ".d2s"
+            ),
+            game: TestSaveGame::$game,
+            version: $version,
+            expansion: TestSaveCharacterExpansion::$expansion,
+            class: CharacterClass::$class,
+            stage: TestSaveCharacterStage::$stage,
+            name: None,
+        }
+    };
+
+    ($game:ident, $version:literal, $expansion:ident, $class:ident, $stage:ident, $name:literal) => {
+        TestSave {
+            bytes: include_bytes!(concat!(
+                stringify!($game),
+                "/",
+                $version,
+                "/",
+                stringify!($expansion),
+                "_",
+                stringify!($class),
+                "/",
+                stringify!($stage),
+                "_",
+                $name,
+                ".d2s"
+            )),
+            filename: concat!(
+                stringify!($game),
+                "/",
+                $version,
+                "/",
+                stringify!($expansion),
+                "_",
+                stringify!($class),
+                "/",
+                stringify!($stage),
+                "_",
+                $name,
+                ".d2s"
+            ),
+            game: TestSaveGame::$game,
+            version: $version,
+            expansion: TestSaveCharacterExpansion::$expansion,
+            class: TestSaveCharacterClass::$class,
+            stage: TestSaveCharacterStage::$stage,
+            name: Some($name),
+        }
+    };
+}
+
+pub fn all() -> Vec<TestSave> {
+    let mut result = official();
+    result.append(&mut modded());
+    result
+}
+
+pub fn official() -> Vec<TestSave> {
+    vec![
+        // 1.00
+        include_save!(Classic, "1.00", Classic, Amazon, Starter),
+        include_save!(Classic, "1.00", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.00", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.00", Classic, Paladin, Starter),
+        include_save!(Classic, "1.00", Classic, Sorceress, Starter),
+        // 1.01
+        include_save!(Classic, "1.01", Classic, Amazon, Starter),
+        include_save!(Classic, "1.01", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.01", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.01", Classic, Paladin, Starter),
+        include_save!(Classic, "1.01", Classic, Sorceress, Starter),
+        // 1.02
+        include_save!(Classic, "1.02", Classic, Amazon, Starter),
+        include_save!(Classic, "1.02", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.02", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.02", Classic, Paladin, Starter),
+        include_save!(Classic, "1.02", Classic, Sorceress, Starter),
+        // 1.03
+        include_save!(Classic, "1.03", Classic, Amazon, Starter),
+        include_save!(Classic, "1.03", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.03", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.03", Classic, Paladin, Starter),
+        include_save!(Classic, "1.03", Classic, Sorceress, Starter),
+        // 1.04c
+        include_save!(Classic, "1.04c", Classic, Amazon, Starter),
+        include_save!(Classic, "1.04c", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.04c", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.04c", Classic, Paladin, Starter),
+        include_save!(Classic, "1.04c", Classic, Sorceress, Starter),
+        // 1.05b
+        include_save!(Classic, "1.05b", Classic, Amazon, Starter),
+        include_save!(Classic, "1.05b", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.05b", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.05b", Classic, Paladin, Starter),
+        include_save!(Classic, "1.05b", Classic, Sorceress, Starter),
+        // 1.06b (last patch before LoD release)
+        include_save!(Classic, "1.06b", Classic, Amazon, Starter),
+        include_save!(Classic, "1.06b", Classic, Barbarian, Starter),
+        include_save!(Classic, "1.06b", Classic, Necromancer, Starter),
+        include_save!(Classic, "1.06b", Classic, Paladin, Starter),
+        include_save!(Classic, "1.06b", Classic, Sorceress, Starter),
+        // 1.07
+        include_save!(ClassicLoD, "1.07", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.07", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.07", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.07", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.07", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.07", LoD, Druid, Starter),
+        // 1.08
+        include_save!(ClassicLoD, "1.08", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.08", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.08", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.08", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.08", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.08", LoD, Druid, Starter),
+        // 1.09d
+        include_save!(ClassicLoD, "1.09d", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.09d", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.09d", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.09d", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.09d", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.09d", LoD, Druid, Starter),
+        // 1.10
+        include_save!(ClassicLoD, "1.10", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.10", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.10", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.10", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.10", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.10", LoD, Druid, Starter),
+        // 1.11b
+        include_save!(ClassicLoD, "1.11b", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.11b", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.11b", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.11b", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.11b", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.11b", LoD, Druid, Starter),
+        // 1.12a
+        include_save!(ClassicLoD, "1.12a", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.12a", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.12a", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.12a", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.12a", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.12a", LoD, Druid, Starter),
+        // 1.13d
+        include_save!(ClassicLoD, "1.13d", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.13d", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.13d", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.13d", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.13d", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.13d", LoD, Druid, Starter),
+        // 1.14b
+        include_save!(ClassicLoD, "1.14b", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.14b", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.14b", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.14b", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.14b", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.14b", LoD, Druid, Starter),
+        // 1.14d (latest Classic LoD)
+        include_save!(ClassicLoD, "1.14d", Classic, Amazon, Starter),
+        include_save!(ClassicLoD, "1.14d", Classic, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.14d", Classic, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.14d", Classic, Paladin, Starter),
+        include_save!(ClassicLoD, "1.14d", Classic, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Amazon, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Barbarian, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Necromancer, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Paladin, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Sorceress, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Assassin, Starter),
+        include_save!(ClassicLoD, "1.14d", LoD, Druid, Starter),
+        // 3.0.92198 (latest Resurrected version as of 4/20/2026 and can't easily switch to older, fuck modern Blizzard)
+        include_save!(Resurrected, "3.0.92198", Classic, Amazon, Starter),
+        include_save!(Resurrected, "3.0.92198", Classic, Barbarian, Starter),
+        include_save!(Resurrected, "3.0.92198", Classic, Necromancer, Starter),
+        include_save!(Resurrected, "3.0.92198", Classic, Paladin, Starter),
+        include_save!(Resurrected, "3.0.92198", Classic, Sorceress, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Amazon, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Barbarian, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Necromancer, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Paladin, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Sorceress, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Assassin, Starter),
+        include_save!(Resurrected, "3.0.92198", LoD, Druid, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Amazon, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Barbarian, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Necromancer, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Paladin, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Sorceress, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Assassin, Starter),
+        include_save!(Resurrected, "3.0.92198", RotW, Druid, Starter),
+        // include_save!(Resurrected, "3.0.92198", RotW, Warlock, Starter),
+    ]
+}
+
+pub fn modded() -> Vec<TestSave> {
+    vec![
+        // PD2 2.13.0 (Season 12)
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Amazon, Starter),
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Barbarian, Starter),
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Necromancer, Starter),
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Paladin, Starter),
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Sorceress, Starter),
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Assassin, Starter),
+        include_save!(ProjectDiablo2, "2.13.0", LoD, Druid, Starter),
+    ]
+}
