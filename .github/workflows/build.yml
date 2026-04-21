@@ -14,7 +14,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
       - name: Run cargo test
-        run: cargo test
+        run: |
+          cd tyrael
+          cargo test
 
   clippy:
     runs-on: ubuntu-latest
@@ -23,7 +25,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
       - name: Run clippy
-        run: cargo clippy -- -D warnings
+        run: |
+          cd tyrael
+          cargo clippy -- -D warnings
 
   format:
     runs-on: ubuntu-latest
@@ -32,4 +36,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
       - name: Run cargo fmt
-        run: cargo fmt --all -- --check
+        run: |
+          cd tyrael
+          cargo fmt --all -- --check
