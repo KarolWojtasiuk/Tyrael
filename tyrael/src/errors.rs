@@ -13,7 +13,7 @@ pub enum ReadCharacterSaveError {
     #[error("invalid character progression (expansion: {expansion}, progression: {progression})")]
     InvalidCharacterProgression { expansion: bool, progression: u8 },
     #[error("invalid character active weapon set ({_0})")]
-    InvalidCharacterWeaponSet(u32),
+    InvalidCharacterWeaponSet(u8),
     #[error("invalid character class ({_0:#010b})")]
     InvalidCharacterClass(u8),
     #[error("invalid magic value (expected: {expected:#010x}, actual: {actual:#010x})")]

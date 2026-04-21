@@ -103,3 +103,22 @@ In expansion mode value is incremented after Andarial/Duriel/Mephisto by 1 and a
 Value indicating active weapon set.  
 - 0 = Weapon Set 1  
 - 1 = Weapon Set 2 (Expansion only)
+
+### Character class
+Value indicating character class.  
+|Value|Class|
+|-|-|
+|0|Amazon|
+|1|Sorceress|
+|2|Necromancer|
+|3|Paladin|
+|4|Barbarian|
+|5|Druid|
+|6|Assassin|
+|?|Warlock|
+
+### Menu level
+Value indicating character level shown in menu, it is not a real character level which is stored in character stats.
+
+### Timestamp
+Value indicating when character was last played/saved, value is stored as unix timestamp.

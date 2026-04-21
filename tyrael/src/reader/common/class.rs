@@ -1,11 +1,7 @@
-use std::slice::Iter;
-
 use crate::character::CharacterClass;
 use crate::errors::ReadCharacterSaveError;
-use crate::reader::common::ReaderExt;
 
-pub fn read_character_class(data: &mut Iter<u8>) -> Result<CharacterClass, ReadCharacterSaveError> {
-    let data = data.read_u8()?;
+pub fn read_character_class(data: u8) -> Result<CharacterClass, ReadCharacterSaveError> {
     match data {
         0 => Ok(CharacterClass::Amazon),
         1 => Ok(CharacterClass::Sorceress),

@@ -20,10 +20,11 @@ pub fn read_character_info(
     data: &mut Iter<u8>,
     version: u32,
 ) -> Result<CharacterInfo, ReadCharacterSaveError> {
-    let name = common::read_character_name(data)?;
-    let status = common::read_character_status(data)?;
-    let progression = common::read_character_progression(data, status.expansion)?;
-    let active_weapon = common::read_character_active_weapon_u16(data)?;
+    let name = common::read_character_name(data.read_bytes::<16>()?)
+        .map_err(ReadCharacterSaveError::InvalidCharacterName)?;
+    let status = common::read_character_status(data.read_u8()?)?;
+    let progression = common::read_character_progression(data.read_u8()?, status.expansion)?;
+    let active_weapon = common::read_character_active_weapon(data.read_u16()? as u8)?;
 
     {
         let expected = match version {
@@ -51,7 +52,8 @@ pub fn read_character_info(
         }
     }
 
-    let class = common::read_character_class(data)?;
+    let class = common::read_character_class(data.read_u16()? as u8)?;
+    let menu_level = data.read_u16()? as u8;
 
     Ok(CharacterInfo {
         name,
@@ -59,5 +61,7 @@ pub fn read_character_info(
         status,
         progression,
         active_weapon,
+        menu_level,
+        last_played_at: None,
     })
 }

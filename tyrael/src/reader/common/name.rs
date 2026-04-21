@@ -1,11 +1,6 @@
-use std::slice::Iter;
+use crate::errors::CharacterNameError;
 
-use crate::errors::{CharacterNameError, ReadCharacterSaveError};
-use crate::reader::common::ReaderExt;
-
-pub fn read_character_name(data: &mut Iter<u8>) -> Result<String, ReadCharacterSaveError> {
-    let data = data.read_bytes::<16>()?;
-
+pub fn read_character_name(data: [u8; 16]) -> Result<String, CharacterNameError> {
     let mut result = String::new();
     let mut null_present = false;
     let mut dash_or_underscore_present = false;
@@ -17,16 +12,12 @@ pub fn read_character_name(data: &mut Iter<u8>) -> Result<String, ReadCharacterS
             null_present = true;
             continue;
         } else if null_present {
-            return Err(ReadCharacterSaveError::InvalidCharacterName(
-                CharacterNameError::NameContainsOtherCharacterAfterNull,
-            ));
+            return Err(CharacterNameError::NameContainsOtherCharacterAfterNull);
         }
 
         if character == '-' || character == '_' {
             if dash_or_underscore_present {
-                return Err(ReadCharacterSaveError::InvalidCharacterName(
-                    CharacterNameError::NameContainsMultipleDashesOrUnderscores,
-                ));
+                return Err(CharacterNameError::NameContainsMultipleDashesOrUnderscores);
             }
             dash_or_underscore_present = true;
             result.push(character);
@@ -34,30 +25,20 @@ pub fn read_character_name(data: &mut Iter<u8>) -> Result<String, ReadCharacterS
         }
 
         if !character.is_ascii_alphabetic() {
-            return Err(ReadCharacterSaveError::InvalidCharacterName(
-                CharacterNameError::NameContainsInvalidCharacter(character),
-            ));
+            return Err(CharacterNameError::NameContainsInvalidCharacter(character));
         }
 
         result.push(character);
     }
 
     if result.len() < 2 {
-        Err(ReadCharacterSaveError::InvalidCharacterName(
-            CharacterNameError::NameTooShort,
-        ))
+        Err(CharacterNameError::NameTooShort)
     } else if result.len() > 15 {
-        Err(ReadCharacterSaveError::InvalidCharacterName(
-            CharacterNameError::NameTooLong,
-        ))
+        Err(CharacterNameError::NameTooLong)
     } else if result.starts_with('-') || result.starts_with('_') {
-        Err(ReadCharacterSaveError::InvalidCharacterName(
-            CharacterNameError::NameStartsWithDashOrUnderscore,
-        ))
+        Err(CharacterNameError::NameStartsWithDashOrUnderscore)
     } else if result.ends_with('-') || result.ends_with('_') {
-        Err(ReadCharacterSaveError::InvalidCharacterName(
-            CharacterNameError::NameEndsWithDashOrUnderscore,
-        ))
+        Err(CharacterNameError::NameEndsWithDashOrUnderscore)
     } else {
         Ok(result)
     }
@@ -66,7 +47,7 @@ pub fn read_character_name(data: &mut Iter<u8>) -> Result<String, ReadCharacterS
 #[cfg(test)]
 mod tests {
     use super::read_character_name;
-    use crate::errors::{CharacterNameError, ReadCharacterSaveError};
+    use crate::errors::CharacterNameError;
 
     #[test]
     fn returns_ok_on_valid_names() {
@@ -75,7 +56,7 @@ mod tests {
             let mut name_data = [0u8; 16];
             name_data[..len].copy_from_slice(&name.as_bytes()[..len]);
 
-            assert_eq!(name, read_character_name(&mut name_data.iter()).unwrap())
+            assert_eq!(name, read_character_name(name_data).unwrap())
         }
     }
 
@@ -127,10 +108,7 @@ mod tests {
             let mut name_data = [0u8; 16];
             name_data[..len].copy_from_slice(&name.as_bytes()[..len]);
 
-            assert_eq!(
-                ReadCharacterSaveError::InvalidCharacterName(error),
-                read_character_name(&mut name_data.iter()).unwrap_err()
-            )
+            assert_eq!(error, read_character_name(name_data).unwrap_err())
         }
     }
 }

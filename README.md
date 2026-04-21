@@ -7,7 +7,7 @@ Diablo 2 save parser library
 ## Building
 ### Library
 1. Install [Rust toolchain](https://rustup.rs/)
-2. Run `cargo build` in 'tyrael' directory
+2. Run `cargo build` in `tyrael` directory
 
 ### Docs
 1. [Install mdBook](https://rust-lang.github.io/mdBook/guide/installation.html)

@@ -11,5 +11,5 @@ keywords = ["diablo", "game", "gamedev", "parser"]
 categories = ["games", "parsing"]
 
 [dependencies]
-derive_more = { version = "2.1.1", features = ["display"] }
+derive_more = { version = "2.1.1", features = ["constructor", "display"] }
 thiserror = "2.0.18"

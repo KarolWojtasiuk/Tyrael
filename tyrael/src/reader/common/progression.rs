@@ -1,17 +1,12 @@
-use std::slice::Iter;
-
 use crate::character::CharacterProgression;
 use crate::errors::ReadCharacterSaveError;
-use crate::reader::common::ReaderExt;
 
 pub fn read_character_progression(
-    data: &mut Iter<u8>,
+    data: u8,
     expansion: bool,
 ) -> Result<CharacterProgression, ReadCharacterSaveError> {
-    let progression = data.read_u8()?;
-
     Ok(match expansion {
-        false => match progression {
+        false => match data {
             0 => CharacterProgression::None,
             1 => CharacterProgression::NormalAndarielKilled,
             2 => CharacterProgression::NormalDurielKilled,
@@ -28,11 +23,11 @@ pub fn read_character_progression(
             _ => {
                 return Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion,
-                    progression,
+                    progression: data,
                 });
             }
         },
-        true => match progression {
+        true => match data {
             0 => CharacterProgression::None,
             1 => CharacterProgression::NormalAndarielKilled,
             2 => CharacterProgression::NormalDurielKilled,
@@ -49,7 +44,7 @@ pub fn read_character_progression(
             _ => {
                 return Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion,
-                    progression,
+                    progression: data,
                 });
             }
         },
