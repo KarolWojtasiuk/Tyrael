@@ -28,7 +28,7 @@ Save file size in bytes.
 
 ### Checksum
 Save file checksum, if value is invalid, Diablo will not load that character.
-To calculate checksum set this field to 0 and use algorithm.
+To calculate checksum set this field to 0 and use algorithm.  
 TODO: algorithm
 
 ## Character information

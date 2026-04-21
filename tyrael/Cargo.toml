@@ -2,6 +2,13 @@
 name = "tyrael"
 version = "0.0.0"
 edition = "2024"
+description = "Diablo 2 save parser library"
+readme = "../README.md"
+homepage = "https://karolwojtasiuk.com/Tyrael"
+repository = "https://github.com/KarolWojtasiuk/Tyrael"
+license = "GPL-3.0-or-later"
+keywords = ["diablo", "game", "gamedev", "parser"]
+categories = ["games", "parsing"]
 
 [dependencies]
 derive_more = { version = "2.1.1", features = ["display"] }
