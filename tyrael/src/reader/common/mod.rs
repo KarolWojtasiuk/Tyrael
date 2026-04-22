@@ -1,16 +1,8 @@
-mod active_weapon;
-mod class;
-mod name;
-mod progression;
-mod status;
+pub mod character;
+pub mod location;
+pub mod mercenary;
 
 use std::slice::Iter;
-
-pub use active_weapon::{read_character_active_weapon_u16, read_character_active_weapon_u32};
-pub use class::read_character_class;
-pub use name::read_character_name;
-pub use progression::read_character_progression;
-pub use status::read_character_status;
 
 use crate::errors::ReadCharacterSaveError;
 

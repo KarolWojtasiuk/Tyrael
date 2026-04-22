@@ -1,7 +1,11 @@
 # Fields
 
+## General
 ### Magic value
 Unknown value with no information available on the internet, generally has a constant value for a given save version.
+
+### Timestamp
+Value indicating when character was last played/saved, value is stored as unix timestamp.
 
 ## Version header
 ### Signature
@@ -31,7 +35,7 @@ Save file checksum, if value is invalid, Diablo will not load that character.
 To calculate checksum set this field to 0 and use algorithm.  
 TODO: algorithm
 
-## Character information
+## Character data
 ### Character name
 Character name padded with null bytes at the end.  
 Rules:
@@ -44,8 +48,21 @@ Rules:
 - Must end with null bytes
 - Must not contain any other character than null after first null byte
 
+### Character class
+Value indicating character class.  
+|Value|Class|
+|-|-|
+|0|Amazon|
+|1|Sorceress|
+|2|Necromancer|
+|3|Paladin|
+|4|Barbarian|
+|5|Druid|
+|6|Assassin|
+|?|Warlock|
+
 ### Character status
-Flags indicating character status.
+Bit flags indicating character status.
 |Bit|Name|Value|
 |-|-|-|
 |0|Unknown|Always 0|
@@ -103,3 +120,48 @@ In expansion mode value is incremented after Andarial/Duriel/Mephisto by 1 and a
 Value indicating active weapon set.  
 - 0 = Weapon Set 1  
 - 1 = Weapon Set 2 (Expansion only)
+
+### Menu level
+Value indicating character level shown in menu, it is not a real character level which is stored in character stats.
+
+### Menu appearance
+Value defines how character looks in menu screen.  
+TODO
+
+## Skill shortcuts
+### Keyboard skills
+Array mapping keyboard key to skill, index is a key and value contains skill id.  
+
+### Mouse skill
+Value is a skill id mapped to the mouse key.
+
+## Location data
+### Save location
+Value indicates in what difficulty and act the character was saved.  
+In short form first hex is an act (0=Act1 - 4=Act5) and second hex is a difficulty (0=Normal - 2=Hell).  
+In long form each byte is a separate data for difficulty starting from Normal. TODO: how exactly?
+
+### Seed
+Random seed generated at game start, determines maps layout.
+
+## Mercenary data
+### Mercenary dead
+Value indicating if mercenary is dead, 0=Alive and 1=Dead.
+
+### Mercenary seed
+TODO: one per mercenary or game?
+
+### Mercenary name ID
+Value indicating mercenary name.  
+TODO: Where this ID points to
+
+### Mercenary kind
+Value indicating mercenary kind.  
+|Value|Kind|
+|-|-|
+|0|None|
+|1|Act 1|
+TODO: Check other mercenaries
+
+### Mercenary experience
+Value indicating current mercenary experience.
