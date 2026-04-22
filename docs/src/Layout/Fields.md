@@ -1,7 +1,11 @@
 # Fields
 
+## General
 ### Magic value
 Unknown value with no information available on the internet, generally has a constant value for a given save version.
+
+### Timestamp
+Value indicating when character was last played/saved, value is stored as unix timestamp.
 
 ## Version header
 ### Signature
@@ -44,8 +48,21 @@ Rules:
 - Must end with null bytes
 - Must not contain any other character than null after first null byte
 
+### Character class
+Value indicating character class.  
+|Value|Class|
+|-|-|
+|0|Amazon|
+|1|Sorceress|
+|2|Necromancer|
+|3|Paladin|
+|4|Barbarian|
+|5|Druid|
+|6|Assassin|
+|?|Warlock|
+
 ### Character status
-Flags indicating character status.
+Bit flags indicating character status.
 |Bit|Name|Value|
 |-|-|-|
 |0|Unknown|Always 0|
@@ -57,7 +74,7 @@ Flags indicating character status.
 |6|Unknown|Always 0|
 |7|Unknown|Always 0|
 
-### Character progression
+### Game completion
 Value indicating number of bosses killed. Used for determining character title and which difficulty you can play.
 Values slightly differ between Classic and Expansion mode.
 
@@ -104,21 +121,22 @@ Value indicating active weapon set.
 - 0 = Weapon Set 1  
 - 1 = Weapon Set 2 (Expansion only)
 
-### Character class
-Value indicating character class.  
-|Value|Class|
-|-|-|
-|0|Amazon|
-|1|Sorceress|
-|2|Necromancer|
-|3|Paladin|
-|4|Barbarian|
-|5|Druid|
-|6|Assassin|
-|?|Warlock|
-
 ### Menu level
 Value indicating character level shown in menu, it is not a real character level which is stored in character stats.
 
-### Timestamp
-Value indicating when character was last played/saved, value is stored as unix timestamp.
+### Menu appearance
+Value defines how character looks in menu screen.  
+TODO
+
+## Skill shortcuts
+### Keyboard skills
+Array mapping keyboard key to skill, index is a key and value contains skill id.  
+
+### Mouse skill
+Value is a skill id mapped to the mouse key.
+
+## Game progression
+### Save location
+Value indicates in what difficulty and act the character was saved.  
+In short form first hex is an act (0=Act1 - 4=Act5) and second hex is a difficulty (0=Normal - 2=Hell).  
+In long form each byte is a separate data for difficulty starting from Normal. TODO: how exactly?

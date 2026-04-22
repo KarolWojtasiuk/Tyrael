@@ -1,10 +1,10 @@
 use std::slice::Iter;
 
-use super::common;
 use crate::CharacterSave;
 use crate::character::CharacterInfo;
 use crate::errors::ReadCharacterSaveError;
-use crate::reader::common::ReaderExt;
+use crate::progression::GameProgression;
+use crate::reader::common::{ReaderExt, character, progression};
 
 pub fn read_character_save(
     data: &mut Iter<u8>,
@@ -13,18 +13,19 @@ pub fn read_character_save(
     Ok(CharacterSave {
         version,
         character: read_character_info(data, version)?,
+        progression: read_game_progression(data)?,
     })
 }
 
-pub fn read_character_info(
+fn read_character_info(
     data: &mut Iter<u8>,
     version: u32,
 ) -> Result<CharacterInfo, ReadCharacterSaveError> {
-    let name = common::read_character_name(data.read_bytes::<16>()?)
+    let name = character::read_name(data.read_bytes::<16>()?)
         .map_err(ReadCharacterSaveError::InvalidCharacterName)?;
-    let status = common::read_character_status(data.read_u8()?)?;
-    let progression = common::read_character_progression(data.read_u8()?, status.expansion)?;
-    let active_weapon = common::read_character_active_weapon(data.read_u16()? as u8)?;
+    let status = character::read_status(data.read_u8()?)?;
+    let game_completion = character::read_game_completion(data.read_u8()?, status.expansion)?;
+    let active_weapon_set = character::read_active_weapon_set(data.read_u16()? as u8)?;
 
     {
         let expected = match version {
@@ -52,16 +53,25 @@ pub fn read_character_info(
         }
     }
 
-    let class = common::read_character_class(data.read_u16()? as u8)?;
+    let class = character::read_class(data.read_u16()? as u8)?;
     let menu_level = data.read_u16()? as u8;
+    let menu_appearance = character::read_menu_appearance(data.read_bytes::<32>()?)?;
+    let skill_shortcuts = character::read_skill_shortcuts_short(data)?;
 
     Ok(CharacterInfo {
         name,
         class,
         status,
-        progression,
-        active_weapon,
+        game_completion,
+        active_weapon_set,
         menu_level,
+        menu_appearance,
+        skill_shortcuts,
         last_played_at: None,
     })
+}
+
+fn read_game_progression(data: &mut Iter<u8>) -> Result<GameProgression, ReadCharacterSaveError> {
+    let save_location = progression::read_save_location_short(data.read_u16()?)?;
+    Ok(GameProgression { save_location })
 }

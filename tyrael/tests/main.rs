@@ -6,9 +6,13 @@ use tyrael::CharacterSave;
 use tyrael::character::{
     CharacterActiveWeaponSet,
     CharacterClass,
-    CharacterProgression,
+    CharacterGameCompletion,
+    CharacterInfo,
+    CharacterMenuAppearance,
+    CharacterSkillShortcuts,
     CharacterStatus,
 };
+use tyrael::progression::{GameAct, GameDifficulty, GameProgression, GameSaveLocation};
 
 #[test]
 fn all_saves_are_correctly_load_and_saved() {
@@ -29,6 +33,17 @@ fn all_saves_are_correctly_load_and_saved() {
             );
         }
 
+        if save.character.menu_appearance.0.iter().all(|d| *d == 0) {
+            panic!("{}: Empty character menu appearance", file.filename);
+        }
+
+        if save.character.menu_level == 0 || save.character.menu_level > 99 {
+            panic!(
+                "{}: Invalid character menu level {}",
+                file.filename, save.character.menu_level
+            );
+        }
+
         // TODO:
         // let output = match save.write() {
         //     Ok(o) => o,
@@ -42,20 +57,35 @@ fn all_saves_are_correctly_load_and_saved() {
 fn sacrifice_paladin_is_parsed_correctly() {
     let file = saves::normal::SACRIFICE_LEVEL_4;
     let save = CharacterSave::read(file.bytes).unwrap();
-    assert_eq!(71, save.version);
-    assert_eq!("Test", save.character.name);
-    assert_eq!(CharacterClass::Paladin, save.character.class);
-    assert_eq!(
-        CharacterStatus::new(false, false, false),
-        save.character.status
-    );
-    assert_eq!(CharacterProgression::None, save.character.progression);
-    assert_eq!(
-        CharacterActiveWeaponSet::WeaponSet1,
-        save.character.active_weapon
-    );
-    assert_eq!(4, save.character.menu_level);
-    assert_eq!(None, save.character.last_played_at);
+    let expected_save = CharacterSave {
+        version: 71,
+        character: CharacterInfo {
+            name: "Test".to_string(),
+            class: CharacterClass::Paladin,
+            status: CharacterStatus::new(false, false, false),
+            game_completion: CharacterGameCompletion::None,
+            active_weapon_set: CharacterActiveWeaponSet::WeaponSet1,
+            menu_level: 4,
+            menu_appearance: CharacterMenuAppearance([
+                // TODO
+                5, 1, 1, 1, 1, 47, 255, 27, 2, 2, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+                255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            ]),
+            skill_shortcuts: CharacterSkillShortcuts::Short {
+                // TODO
+                keyboard: [
+                    0x0100, 0x0160, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF,
+                ],
+                lmb: 0x60,
+                rmb: 0x62,
+            },
+            last_played_at: None,
+        },
+        progression: GameProgression {
+            save_location: GameSaveLocation::new(GameDifficulty::Normal, GameAct::Act1),
+        },
+    };
+    assert_eq!(expected_save, save);
 
     // attributes: 25 20 40 15
     // life 73/119

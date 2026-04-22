@@ -1,19 +1,21 @@
 #![feature(iter_next_chunk)]
 
-use character::CharacterInfo;
-use errors::ReadCharacterSaveError;
-
-use crate::errors::WriteCharacterSaveError;
+use crate::character::CharacterInfo;
+use crate::errors::{ReadCharacterSaveError, WriteCharacterSaveError};
+use crate::progression::GameProgression;
 
 pub mod character;
 pub mod errors;
+pub mod progression;
 
 mod reader;
 mod writer;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct CharacterSave {
     pub version: u32,
     pub character: CharacterInfo,
+    pub progression: GameProgression,
 }
 
 impl CharacterSave {
