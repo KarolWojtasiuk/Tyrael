@@ -1,6 +1,7 @@
 pub mod character;
 pub mod location;
 pub mod mercenary;
+pub mod quest;
 
 use std::slice::Iter;
 

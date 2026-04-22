@@ -5,7 +5,8 @@ use crate::character::CharacterData;
 use crate::errors::ReadCharacterSaveError;
 use crate::location::LocationData;
 use crate::mercenary::MercenaryData;
-use crate::reader::common::{ReaderExt, character, location, mercenary};
+use crate::quest::QuestData;
+use crate::reader::common::{ReaderExt, character, location, mercenary, quest};
 
 pub fn read_character_save(
     data: &mut Iter<u8>,
@@ -19,6 +20,7 @@ pub fn read_character_save(
         character: read_character_data(data)?,
         location: read_location_data(data)?,
         mercenary: Some(read_mercenary_data(data)?),
+        quests: read_quest_data(data)?,
     })
 }
 
@@ -138,4 +140,10 @@ fn read_mercenary_data(data: &mut Iter<u8>) -> Result<MercenaryData, ReadCharact
         experience,
         dead,
     })
+}
+
+fn read_quest_data(data: &mut Iter<u8>) -> Result<QuestData, ReadCharacterSaveError> {
+    quest::read_woo_header(data)?;
+
+    Ok(QuestData {})
 }

@@ -4,11 +4,13 @@ use crate::character::CharacterData;
 use crate::errors::{ReadCharacterSaveError, WriteCharacterSaveError};
 use crate::location::LocationData;
 use crate::mercenary::MercenaryData;
+use crate::quest::QuestData;
 
 pub mod character;
 pub mod errors;
 pub mod location;
 pub mod mercenary;
+pub mod quest;
 
 mod reader;
 mod writer;
@@ -19,6 +21,7 @@ pub struct CharacterSave {
     pub character: CharacterData,
     pub location: LocationData,
     pub mercenary: Option<MercenaryData>,
+    pub quests: QuestData,
 }
 
 impl CharacterSave {

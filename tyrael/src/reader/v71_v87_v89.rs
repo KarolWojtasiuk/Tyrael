@@ -4,7 +4,8 @@ use crate::CharacterSave;
 use crate::character::CharacterData;
 use crate::errors::ReadCharacterSaveError;
 use crate::location::LocationData;
-use crate::reader::common::{ReaderExt, character, location};
+use crate::quest::QuestData;
+use crate::reader::common::{ReaderExt, character, location, quest};
 
 pub fn read_character_save(
     data: &mut Iter<u8>,
@@ -15,6 +16,7 @@ pub fn read_character_save(
         character: read_character_data(data, version)?,
         location: read_location_data(data)?,
         mercenary: None,
+        quests: read_quest_data(data)?,
     })
 }
 
@@ -89,4 +91,10 @@ fn read_location_data(data: &mut Iter<u8>) -> Result<LocationData, ReadCharacter
     let seed = data.read_u32()?;
 
     Ok(LocationData::new(seed, save_location))
+}
+
+fn read_quest_data(data: &mut Iter<u8>) -> Result<QuestData, ReadCharacterSaveError> {
+    quest::read_woo_header(data)?;
+
+    Ok(QuestData {})
 }

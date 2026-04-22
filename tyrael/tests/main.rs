@@ -14,6 +14,7 @@ use tyrael::character::{
 };
 use tyrael::location::{GameAct, GameDifficulty, GameSaveLocation, LocationData};
 use tyrael::mercenary::{MercenaryData, MercenaryKind};
+use tyrael::quest::QuestData;
 
 #[test]
 fn all_saves_are_correctly_load_and_saved() {
@@ -94,6 +95,7 @@ fn sacrifice_paladin_is_parsed_correctly() {
             GameSaveLocation::new(GameDifficulty::Normal, GameAct::Act1),
         ),
         mercenary: None,
+        quests: QuestData {},
     };
     assert_eq!(expected_save, save);
 
@@ -164,6 +166,7 @@ fn tiger_assassin_is_parsed_correctly() {
             experience: 8400,
             dead: false,
         }),
+        quests: QuestData {},
     };
     assert_eq!(expected_save, save);
 
