@@ -1,7 +1,8 @@
 use derive_more::{Constructor, Display};
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct GameProgression {
+#[derive(Constructor, Debug, PartialEq, Clone, Copy)]
+pub struct LocationData {
+    pub seed: u32,
     pub save_location: GameSaveLocation,
 }
 

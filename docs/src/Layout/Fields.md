@@ -35,7 +35,7 @@ Save file checksum, if value is invalid, Diablo will not load that character.
 To calculate checksum set this field to 0 and use algorithm.  
 TODO: algorithm
 
-## Character information
+## Character data
 ### Character name
 Character name padded with null bytes at the end.  
 Rules:
@@ -74,7 +74,7 @@ Bit flags indicating character status.
 |6|Unknown|Always 0|
 |7|Unknown|Always 0|
 
-### Game completion
+### Character progression
 Value indicating number of bosses killed. Used for determining character title and which difficulty you can play.
 Values slightly differ between Classic and Expansion mode.
 
@@ -135,8 +135,33 @@ Array mapping keyboard key to skill, index is a key and value contains skill id.
 ### Mouse skill
 Value is a skill id mapped to the mouse key.
 
-## Game progression
+## Location data
 ### Save location
 Value indicates in what difficulty and act the character was saved.  
 In short form first hex is an act (0=Act1 - 4=Act5) and second hex is a difficulty (0=Normal - 2=Hell).  
 In long form each byte is a separate data for difficulty starting from Normal. TODO: how exactly?
+
+### Seed
+Random seed generated at game start, determines maps layout.
+
+## Mercenary data
+### Mercenary dead
+Value indicating if mercenary is dead, 0=Alive and 1=Dead.
+
+### Mercenary seed
+TODO: one per mercenary or game?
+
+### Mercenary name ID
+Value indicating mercenary name.  
+TODO: Where this ID points to
+
+### Mercenary kind
+Value indicating mercenary kind.  
+|Value|Kind|
+|-|-|
+|0|None|
+|1|Act 1|
+TODO: Check other mercenaries
+
+### Mercenary experience
+Value indicating current mercenary experience.

@@ -1,11 +1,11 @@
 use derive_more::{Constructor, Display};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct CharacterInfo {
+pub struct CharacterData {
     pub name: String,
     pub class: CharacterClass,
     pub status: CharacterStatus,
-    pub game_completion: CharacterGameCompletion,
+    pub progression: CharacterProgression,
     pub active_weapon_set: CharacterActiveWeaponSet,
     pub menu_level: u8,
     pub menu_appearance: CharacterMenuAppearance,
@@ -33,7 +33,7 @@ pub struct CharacterStatus {
 }
 
 #[derive(Display, Debug, PartialEq, Clone, Copy)]
-pub enum CharacterGameCompletion {
+pub enum CharacterProgression {
     None,
     NormalAndarielKilled,
     NormalDurielKilled,

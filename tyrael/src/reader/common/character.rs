@@ -3,8 +3,8 @@ use std::slice::Iter;
 use crate::character::{
     CharacterActiveWeaponSet,
     CharacterClass,
-    CharacterGameCompletion,
     CharacterMenuAppearance,
+    CharacterProgression,
     CharacterSkillShortcuts,
     CharacterStatus,
 };
@@ -77,50 +77,50 @@ pub fn read_status(data: u8) -> Result<CharacterStatus, ReadCharacterSaveError> 
     })
 }
 
-pub fn read_game_completion(
+pub fn read_progression(
     data: u8,
     expansion: bool,
-) -> Result<CharacterGameCompletion, ReadCharacterSaveError> {
+) -> Result<CharacterProgression, ReadCharacterSaveError> {
     Ok(match expansion {
         false => match data {
-            0 => CharacterGameCompletion::None,
-            1 => CharacterGameCompletion::NormalAndarielKilled,
-            2 => CharacterGameCompletion::NormalDurielKilled,
-            3 => CharacterGameCompletion::NormalMephistoKilled,
-            4 => CharacterGameCompletion::NormalFinalBossKilled,
-            5 => CharacterGameCompletion::NightmareAndarielKilled,
-            6 => CharacterGameCompletion::NightmareDurielKilled,
-            7 => CharacterGameCompletion::NightmareMephistoKilled,
-            8 => CharacterGameCompletion::NightmareFinalBossKilled,
-            9 => CharacterGameCompletion::HellAndarielKilled,
-            10 => CharacterGameCompletion::HellDurielKilled,
-            11 => CharacterGameCompletion::HellMephistoKilled,
-            12 => CharacterGameCompletion::HellFinalBossKilled,
+            0 => CharacterProgression::None,
+            1 => CharacterProgression::NormalAndarielKilled,
+            2 => CharacterProgression::NormalDurielKilled,
+            3 => CharacterProgression::NormalMephistoKilled,
+            4 => CharacterProgression::NormalFinalBossKilled,
+            5 => CharacterProgression::NightmareAndarielKilled,
+            6 => CharacterProgression::NightmareDurielKilled,
+            7 => CharacterProgression::NightmareMephistoKilled,
+            8 => CharacterProgression::NightmareFinalBossKilled,
+            9 => CharacterProgression::HellAndarielKilled,
+            10 => CharacterProgression::HellDurielKilled,
+            11 => CharacterProgression::HellMephistoKilled,
+            12 => CharacterProgression::HellFinalBossKilled,
             _ => {
-                return Err(ReadCharacterSaveError::InvalidCharacterGameCompletion {
+                return Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion,
-                    completion: data,
+                    progression: data,
                 });
             }
         },
         true => match data {
-            0 => CharacterGameCompletion::None,
-            1 => CharacterGameCompletion::NormalAndarielKilled,
-            2 => CharacterGameCompletion::NormalDurielKilled,
-            3 => CharacterGameCompletion::NormalMephistoKilled,
-            5 => CharacterGameCompletion::NormalFinalBossKilled,
-            6 => CharacterGameCompletion::NightmareAndarielKilled,
-            7 => CharacterGameCompletion::NightmareDurielKilled,
-            8 => CharacterGameCompletion::NightmareMephistoKilled,
-            10 => CharacterGameCompletion::NightmareFinalBossKilled,
-            11 => CharacterGameCompletion::HellAndarielKilled,
-            12 => CharacterGameCompletion::HellDurielKilled,
-            13 => CharacterGameCompletion::HellMephistoKilled,
-            15 => CharacterGameCompletion::HellFinalBossKilled,
+            0 => CharacterProgression::None,
+            1 => CharacterProgression::NormalAndarielKilled,
+            2 => CharacterProgression::NormalDurielKilled,
+            3 => CharacterProgression::NormalMephistoKilled,
+            5 => CharacterProgression::NormalFinalBossKilled,
+            6 => CharacterProgression::NightmareAndarielKilled,
+            7 => CharacterProgression::NightmareDurielKilled,
+            8 => CharacterProgression::NightmareMephistoKilled,
+            10 => CharacterProgression::NightmareFinalBossKilled,
+            11 => CharacterProgression::HellAndarielKilled,
+            12 => CharacterProgression::HellDurielKilled,
+            13 => CharacterProgression::HellMephistoKilled,
+            15 => CharacterProgression::HellFinalBossKilled,
             _ => {
-                return Err(ReadCharacterSaveError::InvalidCharacterGameCompletion {
+                return Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion,
-                    completion: data,
+                    progression: data,
                 });
             }
         },
@@ -284,38 +284,38 @@ mod tests {
     }
 
     #[test]
-    fn returns_ok_on_valid_game_completion() {
-        for (d, expansion, completion) in [
-            (0, false, CharacterGameCompletion::None),
-            (1, false, CharacterGameCompletion::NormalAndarielKilled),
-            (2, false, CharacterGameCompletion::NormalDurielKilled),
-            (3, false, CharacterGameCompletion::NormalMephistoKilled),
-            (4, false, CharacterGameCompletion::NormalFinalBossKilled),
-            (5, false, CharacterGameCompletion::NightmareAndarielKilled),
-            (6, false, CharacterGameCompletion::NightmareDurielKilled),
-            (7, false, CharacterGameCompletion::NightmareMephistoKilled),
-            (8, false, CharacterGameCompletion::NightmareFinalBossKilled),
-            (9, false, CharacterGameCompletion::HellAndarielKilled),
-            (10, false, CharacterGameCompletion::HellDurielKilled),
-            (11, false, CharacterGameCompletion::HellMephistoKilled),
-            (12, false, CharacterGameCompletion::HellFinalBossKilled),
-            (0, true, CharacterGameCompletion::None),
-            (1, true, CharacterGameCompletion::NormalAndarielKilled),
-            (2, true, CharacterGameCompletion::NormalDurielKilled),
-            (3, true, CharacterGameCompletion::NormalMephistoKilled),
-            (5, true, CharacterGameCompletion::NormalFinalBossKilled),
-            (6, true, CharacterGameCompletion::NightmareAndarielKilled),
-            (7, true, CharacterGameCompletion::NightmareDurielKilled),
-            (8, true, CharacterGameCompletion::NightmareMephistoKilled),
-            (10, true, CharacterGameCompletion::NightmareFinalBossKilled),
-            (11, true, CharacterGameCompletion::HellAndarielKilled),
-            (12, true, CharacterGameCompletion::HellDurielKilled),
-            (13, true, CharacterGameCompletion::HellMephistoKilled),
-            (15, true, CharacterGameCompletion::HellFinalBossKilled),
+    fn returns_ok_on_valid_progression() {
+        for (d, expansion, progression) in [
+            (0, false, CharacterProgression::None),
+            (1, false, CharacterProgression::NormalAndarielKilled),
+            (2, false, CharacterProgression::NormalDurielKilled),
+            (3, false, CharacterProgression::NormalMephistoKilled),
+            (4, false, CharacterProgression::NormalFinalBossKilled),
+            (5, false, CharacterProgression::NightmareAndarielKilled),
+            (6, false, CharacterProgression::NightmareDurielKilled),
+            (7, false, CharacterProgression::NightmareMephistoKilled),
+            (8, false, CharacterProgression::NightmareFinalBossKilled),
+            (9, false, CharacterProgression::HellAndarielKilled),
+            (10, false, CharacterProgression::HellDurielKilled),
+            (11, false, CharacterProgression::HellMephistoKilled),
+            (12, false, CharacterProgression::HellFinalBossKilled),
+            (0, true, CharacterProgression::None),
+            (1, true, CharacterProgression::NormalAndarielKilled),
+            (2, true, CharacterProgression::NormalDurielKilled),
+            (3, true, CharacterProgression::NormalMephistoKilled),
+            (5, true, CharacterProgression::NormalFinalBossKilled),
+            (6, true, CharacterProgression::NightmareAndarielKilled),
+            (7, true, CharacterProgression::NightmareDurielKilled),
+            (8, true, CharacterProgression::NightmareMephistoKilled),
+            (10, true, CharacterProgression::NightmareFinalBossKilled),
+            (11, true, CharacterProgression::HellAndarielKilled),
+            (12, true, CharacterProgression::HellDurielKilled),
+            (13, true, CharacterProgression::HellMephistoKilled),
+            (15, true, CharacterProgression::HellFinalBossKilled),
         ] {
             assert_eq!(
-                Ok(completion),
-                read_game_completion(d, expansion),
+                Ok(progression),
+                read_progression(d, expansion),
                 "data={}, expansion={}",
                 d,
                 expansion
@@ -324,34 +324,34 @@ mod tests {
     }
 
     #[test]
-    fn returns_err_on_invalid_game_completion() {
+    fn returns_err_on_invalid_progression() {
         for d in [4, 9, 14] {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterGameCompletion {
+                Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion: true,
-                    completion: d
+                    progression: d
                 }),
-                read_game_completion(d, true)
+                read_progression(d, true)
             )
         }
 
         for d in 13..u8::MAX {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterGameCompletion {
+                Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion: false,
-                    completion: d
+                    progression: d
                 }),
-                read_game_completion(d, false)
+                read_progression(d, false)
             )
         }
 
         for d in 16..u8::MAX {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterGameCompletion {
+                Err(ReadCharacterSaveError::InvalidCharacterProgression {
                     expansion: true,
-                    completion: d
+                    progression: d
                 }),
-                read_game_completion(d, true)
+                read_progression(d, true)
             )
         }
     }
