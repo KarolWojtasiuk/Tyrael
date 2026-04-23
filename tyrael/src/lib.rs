@@ -1,16 +1,26 @@
 #![feature(iter_next_chunk)]
 
+use crate::attribute::AttributeData;
 use crate::character::CharacterData;
 use crate::errors::{ReadCharacterSaveError, WriteCharacterSaveError};
+use crate::item::ItemData;
 use crate::location::LocationData;
 use crate::mercenary::MercenaryData;
+use crate::npc::NpcData;
 use crate::quest::QuestData;
+use crate::skill::SkillData;
+use crate::waypoint::WaypointData;
 
+pub mod attribute;
 pub mod character;
 pub mod errors;
+pub mod item;
 pub mod location;
 pub mod mercenary;
+pub mod npc;
 pub mod quest;
+pub mod skill;
+pub mod waypoint;
 
 mod reader;
 mod writer;
@@ -22,6 +32,11 @@ pub struct CharacterSave {
     pub location: LocationData,
     pub mercenary: Option<MercenaryData>,
     pub quests: QuestData,
+    pub waypoints: WaypointData,
+    pub npcs: NpcData,
+    pub attributes: AttributeData,
+    pub skills: SkillData,
+    pub items: ItemData,
 }
 
 impl CharacterSave {

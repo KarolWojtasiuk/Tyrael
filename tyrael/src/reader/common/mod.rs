@@ -1,7 +1,12 @@
+pub mod attribute;
 pub mod character;
+pub mod item;
 pub mod location;
 pub mod mercenary;
+pub mod npc;
 pub mod quest;
+pub mod skill;
+pub mod waypoint;
 
 use std::slice::Iter;
 

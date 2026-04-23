@@ -1,2 +1,2 @@
 #[derive(Debug, PartialEq, Clone)]
-pub struct QuestData; // TODO
+pub struct NpcData; // TODO

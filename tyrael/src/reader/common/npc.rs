@@ -5,19 +5,8 @@ use crate::reader::common::ReaderExt;
 
 pub fn read_header(data: &mut Iter<u8>) -> Result<(), ReadCharacterSaveError> {
     {
-        const EXPECTED: u32 = 0x216F6F57;
-        let actual = data.read_u32().unwrap();
-        if actual != EXPECTED {
-            return Err(ReadCharacterSaveError::InvalidMagicValue {
-                expected: EXPECTED.to_le_bytes().to_vec(),
-                actual: actual.to_le_bytes().to_vec(),
-            });
-        }
-    }
-
-    {
-        const EXPECTED: u32 = 0x00000006;
-        let actual = data.read_u32()?;
+        const EXPECTED: u16 = 0x7701;
+        let actual = data.read_u16().unwrap();
         if actual != EXPECTED {
             return Err(ReadCharacterSaveError::InvalidMagicValue {
                 expected: EXPECTED.to_le_bytes().to_vec(),
@@ -27,6 +16,6 @@ pub fn read_header(data: &mut Iter<u8>) -> Result<(), ReadCharacterSaveError> {
     }
 
     // TODO
-    data.read_bytes::<290>()?;
+    data.read_bytes::<50>()?;
     Ok(())
 }

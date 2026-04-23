@@ -1,11 +1,16 @@
 use std::slice::Iter;
 
 use crate::CharacterSave;
+use crate::attribute::AttributeData;
 use crate::character::CharacterData;
 use crate::errors::ReadCharacterSaveError;
+use crate::item::ItemData;
 use crate::location::LocationData;
+use crate::npc::NpcData;
 use crate::quest::QuestData;
-use crate::reader::common::{ReaderExt, character, location, quest};
+use crate::reader::common::*;
+use crate::skill::SkillData;
+use crate::waypoint::WaypointData;
 
 pub fn read_character_save(
     data: &mut Iter<u8>,
@@ -17,6 +22,11 @@ pub fn read_character_save(
         location: read_location_data(data)?,
         mercenary: None,
         quests: read_quest_data(data)?,
+        waypoints: read_waypoint_data(data)?,
+        npcs: read_npc_data(data)?,
+        attributes: read_attribute_data(data)?,
+        skills: read_skill_data(data)?,
+        items: read_item_data(data)?,
     })
 }
 
@@ -94,7 +104,37 @@ fn read_location_data(data: &mut Iter<u8>) -> Result<LocationData, ReadCharacter
 }
 
 fn read_quest_data(data: &mut Iter<u8>) -> Result<QuestData, ReadCharacterSaveError> {
-    quest::read_woo_header(data)?;
+    quest::read_header(data)?;
+    // TODO
+    Ok(QuestData)
+}
 
-    Ok(QuestData {})
+fn read_waypoint_data(data: &mut Iter<u8>) -> Result<WaypointData, ReadCharacterSaveError> {
+    waypoint::read_header(data)?;
+    // TODO
+    Ok(WaypointData)
+}
+
+fn read_npc_data(data: &mut Iter<u8>) -> Result<NpcData, ReadCharacterSaveError> {
+    npc::read_header(data)?;
+    // TODO
+    Ok(NpcData)
+}
+
+fn read_attribute_data(data: &mut Iter<u8>) -> Result<AttributeData, ReadCharacterSaveError> {
+    attribute::read_header(data)?;
+    // TODO
+    Ok(AttributeData)
+}
+
+fn read_skill_data(data: &mut Iter<u8>) -> Result<SkillData, ReadCharacterSaveError> {
+    skill::read_header(data)?;
+    // TODO
+    Ok(SkillData)
+}
+
+fn read_item_data(data: &mut Iter<u8>) -> Result<ItemData, ReadCharacterSaveError> {
+    item::read_header(data)?;
+    // TODO
+    Ok(ItemData)
 }
