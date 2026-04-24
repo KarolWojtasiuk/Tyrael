@@ -13,4 +13,7 @@ pub struct MercenaryData {
 pub enum MercenaryKind {
     None,
     Act1,
+    Act2,
+    Act3,
+    Act5,
 }
