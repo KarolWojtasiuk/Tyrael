@@ -1,5 +1,3 @@
-use std::slice::Iter;
-
 use crate::character::{
     CharacterActiveWeaponSet,
     CharacterClass,
@@ -8,10 +6,9 @@ use crate::character::{
     CharacterSkillShortcuts,
     CharacterStatus,
 };
-use crate::errors::{CharacterNameError, ReadCharacterSaveError};
-use crate::reader::common::ReaderExt;
+use crate::errors::{CharacterDataError, ReadCharacterSaveError};
 
-pub fn read_name(data: [u8; 16]) -> Result<String, CharacterNameError> {
+pub fn read_name(data: [u8; 16]) -> Result<String, ReadCharacterSaveError> {
     let mut result = String::new();
     let mut null_present = false;
     let mut dash_or_underscore_present = false;
@@ -23,12 +20,12 @@ pub fn read_name(data: [u8; 16]) -> Result<String, CharacterNameError> {
             null_present = true;
             continue;
         } else if null_present {
-            return Err(CharacterNameError::NameContainsOtherCharacterAfterNull);
+            return Err(CharacterDataError::NameContainsOtherCharacterAfterNull.into());
         }
 
         if character == '-' || character == '_' {
             if dash_or_underscore_present {
-                return Err(CharacterNameError::NameContainsMultipleDashesOrUnderscores);
+                return Err(CharacterDataError::NameContainsMultipleDashesOrUnderscores.into());
             }
             dash_or_underscore_present = true;
             result.push(character);
@@ -36,26 +33,26 @@ pub fn read_name(data: [u8; 16]) -> Result<String, CharacterNameError> {
         }
 
         if !character.is_ascii_alphabetic() {
-            return Err(CharacterNameError::NameContainsInvalidCharacter(character));
+            return Err(CharacterDataError::NameContainsInvalidCharacter(character).into());
         }
 
         result.push(character);
     }
 
     if result.len() < 2 {
-        Err(CharacterNameError::NameTooShort)
+        Err(CharacterDataError::NameTooShort.into())
     } else if result.len() > 15 {
-        Err(CharacterNameError::NameTooLong)
+        Err(CharacterDataError::NameTooLong.into())
     } else if result.starts_with('-') || result.starts_with('_') {
-        Err(CharacterNameError::NameStartsWithDashOrUnderscore)
+        Err(CharacterDataError::NameStartsWithDashOrUnderscore.into())
     } else if result.ends_with('-') || result.ends_with('_') {
-        Err(CharacterNameError::NameEndsWithDashOrUnderscore)
+        Err(CharacterDataError::NameEndsWithDashOrUnderscore.into())
     } else {
         Ok(result)
     }
 }
 
-pub fn read_class(data: u8) -> Result<CharacterClass, ReadCharacterSaveError> {
+pub fn read_class(data: u16) -> Result<CharacterClass, ReadCharacterSaveError> {
     match data {
         0 => Ok(CharacterClass::Amazon),
         1 => Ok(CharacterClass::Sorceress),
@@ -65,11 +62,22 @@ pub fn read_class(data: u8) -> Result<CharacterClass, ReadCharacterSaveError> {
         5 => Ok(CharacterClass::Druid),
         6 => Ok(CharacterClass::Assassin),
         // TODO: warlock
-        _ => Err(ReadCharacterSaveError::InvalidCharacterClass(data)),
+        _ => Err(CharacterDataError::InvalidClass(data).into()),
+    }
+}
+
+pub fn read_menu_level(data: u16) -> Result<u8, ReadCharacterSaveError> {
+    match data {
+        0..100 => Ok(data as u8),
+        _ => Err(CharacterDataError::InvalidMenuLevel(data).into()),
     }
 }
 
 pub fn read_status(data: u8) -> Result<CharacterStatus, ReadCharacterSaveError> {
+    if data & 0b1101_0011 > 0 {
+        return Err(CharacterDataError::InvalidStatus(data).into());
+    }
+
     Ok(CharacterStatus {
         hardcore: data & 0b0000_0100 > 0,
         dead: data & 0b0000_1000 > 0,
@@ -97,10 +105,11 @@ pub fn read_progression(
             11 => CharacterProgression::HellMephistoKilled,
             12 => CharacterProgression::HellFinalBossKilled,
             _ => {
-                return Err(ReadCharacterSaveError::InvalidCharacterProgression {
+                return Err(CharacterDataError::InvalidProgression {
                     expansion,
                     progression: data,
-                });
+                }
+                .into());
             }
         },
         true => match data {
@@ -118,77 +127,45 @@ pub fn read_progression(
             13 => CharacterProgression::HellMephistoKilled,
             15 => CharacterProgression::HellFinalBossKilled,
             _ => {
-                return Err(ReadCharacterSaveError::InvalidCharacterProgression {
+                return Err(CharacterDataError::InvalidProgression {
                     expansion,
                     progression: data,
-                });
+                }
+                .into());
             }
         },
     })
 }
 
 pub fn read_active_weapon_set(
-    data: u8,
+    data: u32,
 ) -> Result<CharacterActiveWeaponSet, ReadCharacterSaveError> {
     match data {
         0 => Ok(CharacterActiveWeaponSet::WeaponSet1),
         1 => Ok(CharacterActiveWeaponSet::WeaponSet2),
-        _ => Err(ReadCharacterSaveError::InvalidCharacterWeaponSet(data)),
+        _ => Err(CharacterDataError::InvalidActiveWeaponSet(data).into()),
     }
 }
 
 pub fn read_menu_appearance(
-    data: [u8; 32],
+    _data: [u8; 32],
 ) -> Result<CharacterMenuAppearance, ReadCharacterSaveError> {
-    Ok(CharacterMenuAppearance(data)) // TODO
+    // TODO
+    Ok(CharacterMenuAppearance)
 }
 
-pub fn read_skill_shortcuts_short(
-    data: &mut Iter<u8>,
+pub fn read_skill_shortcuts_old(
+    _data: [u8; 18],
 ) -> Result<CharacterSkillShortcuts, ReadCharacterSaveError> {
-    Ok(CharacterSkillShortcuts::Short {
-        keyboard: [
-            data.read_u16()?,
-            data.read_u16()?,
-            data.read_u16()?,
-            data.read_u16()?,
-            data.read_u16()?,
-            data.read_u16()?,
-            data.read_u16()?,
-            data.read_u16()?,
-        ],
-        lmb: data.read_u8()?,
-        rmb: data.read_u8()?,
-    })
+    // TODO
+    Ok(CharacterSkillShortcuts)
 }
 
-pub fn read_skill_shortcuts_long(
-    data: &mut Iter<u8>,
+pub fn read_skill_shortcuts_new(
+    _data: [u8; 80],
 ) -> Result<CharacterSkillShortcuts, ReadCharacterSaveError> {
-    Ok(CharacterSkillShortcuts::Long {
-        keyboard: [
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-            data.read_u32()?,
-        ],
-        lmb: data.read_u32()?,
-        rmb: data.read_u32()?,
-        lmb_switch: data.read_u32()?,
-        rmb_switch: data.read_u32()?,
-    })
+    // TODO
+    Ok(CharacterSkillShortcuts)
 }
 
 #[cfg(test)]
@@ -209,52 +186,55 @@ mod tests {
     #[test]
     fn returns_err_on_invalid_names() {
         for (name, error) in [
-            ("", CharacterNameError::NameTooShort),
-            ("A", CharacterNameError::NameTooShort),
-            ("VeryLongBarbName", CharacterNameError::NameTooLong),
-            ("VeryLongBarbarianName", CharacterNameError::NameTooLong),
+            ("", CharacterDataError::NameTooShort),
+            ("A", CharacterDataError::NameTooShort),
+            ("VeryLongBarbName", CharacterDataError::NameTooLong),
+            ("VeryLongBarbarianName", CharacterDataError::NameTooLong),
             (
                 "AndyDestroyer69",
-                CharacterNameError::NameContainsInvalidCharacter('6'),
+                CharacterDataError::NameContainsInvalidCharacter('6'),
             ),
             (
                 "_DruidBuild",
-                CharacterNameError::NameStartsWithDashOrUnderscore,
+                CharacterDataError::NameStartsWithDashOrUnderscore,
             ),
             (
                 "-Singer",
-                CharacterNameError::NameStartsWithDashOrUnderscore,
+                CharacterDataError::NameStartsWithDashOrUnderscore,
             ),
             (
                 "JavazonX_",
-                CharacterNameError::NameEndsWithDashOrUnderscore,
+                CharacterDataError::NameEndsWithDashOrUnderscore,
             ),
             (
                 "Hammerdin-",
-                CharacterNameError::NameEndsWithDashOrUnderscore,
+                CharacterDataError::NameEndsWithDashOrUnderscore,
             ),
             (
                 "Giga-Pala-Build",
-                CharacterNameError::NameContainsMultipleDashesOrUnderscores,
+                CharacterDataError::NameContainsMultipleDashesOrUnderscores,
             ),
             (
                 "Giga_Barb_Build",
-                CharacterNameError::NameContainsMultipleDashesOrUnderscores,
+                CharacterDataError::NameContainsMultipleDashesOrUnderscores,
             ),
             (
                 "Giga-Sorc_Build",
-                CharacterNameError::NameContainsMultipleDashesOrUnderscores,
+                CharacterDataError::NameContainsMultipleDashesOrUnderscores,
             ),
             (
                 "GigaBroken\0Name",
-                CharacterNameError::NameContainsOtherCharacterAfterNull,
+                CharacterDataError::NameContainsOtherCharacterAfterNull,
             ),
         ] {
             let len = name.len().clamp(0, 16);
             let mut name_data = [0u8; 16];
             name_data[..len].copy_from_slice(&name.as_bytes()[..len]);
 
-            assert_eq!(error, read_name(name_data).unwrap_err())
+            assert_eq!(
+                ReadCharacterSaveError::InvalidCharacterData(error),
+                read_name(name_data).unwrap_err()
+            )
         }
     }
 
@@ -277,9 +257,46 @@ mod tests {
     fn returns_err_on_invalid_class() {
         for d in 7..u8::MAX {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterClass(d)),
-                read_class(d)
+                Err(ReadCharacterSaveError::InvalidCharacterData(
+                    CharacterDataError::InvalidClass(d as u16)
+                )),
+                read_class(d as u16)
             )
+        }
+    }
+
+    #[test]
+    fn returns_ok_on_valid_status() {
+        for (d, status) in [
+            (0b0000_0000, CharacterStatus::new(false, false, false)),
+            (0b0000_0100, CharacterStatus::new(true, false, false)),
+            (0b0000_1000, CharacterStatus::new(false, true, false)),
+            (0b0000_1100, CharacterStatus::new(true, true, false)),
+            (0b0010_0000, CharacterStatus::new(false, false, true)),
+            (0b0010_0100, CharacterStatus::new(true, false, true)),
+            (0b0010_1000, CharacterStatus::new(false, true, true)),
+            (0b0010_1100, CharacterStatus::new(true, true, true)),
+        ] {
+            assert_eq!(Ok(status), read_status(d));
+        }
+    }
+
+    #[test]
+    fn returns_err_on_invalid_status() {
+        for d in [
+            0b0000_0001,
+            0b0000_0010,
+            0b0001_0000,
+            0b0100_0000,
+            0b1000_0000,
+            0b1111_1111,
+        ] {
+            assert_eq!(
+                Err(ReadCharacterSaveError::InvalidCharacterData(
+                    CharacterDataError::InvalidStatus(d)
+                )),
+                read_status(d)
+            );
         }
     }
 
@@ -327,30 +344,36 @@ mod tests {
     fn returns_err_on_invalid_progression() {
         for d in [4, 9, 14] {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterProgression {
-                    expansion: true,
-                    progression: d
-                }),
+                Err(ReadCharacterSaveError::InvalidCharacterData(
+                    CharacterDataError::InvalidProgression {
+                        expansion: true,
+                        progression: d
+                    }
+                )),
                 read_progression(d, true)
             )
         }
 
         for d in 13..u8::MAX {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterProgression {
-                    expansion: false,
-                    progression: d
-                }),
+                Err(ReadCharacterSaveError::InvalidCharacterData(
+                    CharacterDataError::InvalidProgression {
+                        expansion: false,
+                        progression: d
+                    }
+                )),
                 read_progression(d, false)
             )
         }
 
         for d in 16..u8::MAX {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterProgression {
-                    expansion: true,
-                    progression: d
-                }),
+                Err(ReadCharacterSaveError::InvalidCharacterData(
+                    CharacterDataError::InvalidProgression {
+                        expansion: true,
+                        progression: d
+                    }
+                )),
                 read_progression(d, true)
             )
         }
@@ -370,8 +393,10 @@ mod tests {
     fn returns_err_on_invalid_active_weapon_set() {
         for d in 2..u8::MAX {
             assert_eq!(
-                Err(ReadCharacterSaveError::InvalidCharacterWeaponSet(d)),
-                read_active_weapon_set(d)
+                Err(ReadCharacterSaveError::InvalidCharacterData(
+                    CharacterDataError::InvalidActiveWeaponSet(d as u32)
+                )),
+                read_active_weapon_set(d as u32)
             )
         }
     }

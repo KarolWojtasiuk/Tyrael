@@ -2,7 +2,6 @@ mod common;
 mod saves;
 
 use common::*;
-use tyrael::CharacterSave;
 use tyrael::attribute::*;
 use tyrael::character::*;
 use tyrael::item::*;
@@ -12,6 +11,7 @@ use tyrael::npc::*;
 use tyrael::quest::*;
 use tyrael::skill::*;
 use tyrael::waypoint::*;
+use tyrael::{CharacterSave, U24F8};
 
 #[test]
 fn all_saves_are_correctly_load_and_saved() {
@@ -29,12 +29,6 @@ fn all_saves_are_correctly_load_and_saved() {
             file.class, save.character.class,
             "{}: Character class mismatch (expected: {}, actual: {})",
             file.filename, file.class, save.character.class
-        );
-
-        assert!(
-            save.character.menu_appearance.0.iter().any(|d| *d != 0),
-            "{}: Empty character menu appearance",
-            file.filename
         );
 
         assert!(
@@ -60,7 +54,7 @@ fn all_saves_are_correctly_load_and_saved() {
 }
 
 #[test]
-fn sacrifice_paladin_is_parsed_correctly() {
+fn v100_sacrifice_paladin_level_4_is_parsed_correctly() {
     let file = saves::normal::SACRIFICE_PALADIN_LEVEL_4;
     let save = CharacterSave::read(file.bytes).unwrap();
     let expected_save = CharacterSave {
@@ -72,19 +66,8 @@ fn sacrifice_paladin_is_parsed_correctly() {
             progression: CharacterProgression::None,
             active_weapon_set: CharacterActiveWeaponSet::WeaponSet1,
             menu_level: 4,
-            menu_appearance: CharacterMenuAppearance([
-                // TODO
-                5, 1, 1, 1, 1, 47, 255, 27, 2, 2, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-                255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-            ]),
-            skill_shortcuts: CharacterSkillShortcuts::Short {
-                // TODO
-                keyboard: [
-                    0x0100, 0x0160, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF,
-                ],
-                lmb: 0x60,
-                rmb: 0x62,
-            },
+            menu_appearance: CharacterMenuAppearance,
+            skill_shortcuts: CharacterSkillShortcuts,
             last_played_at: None,
         },
         location: LocationData::new(
@@ -95,14 +78,25 @@ fn sacrifice_paladin_is_parsed_correctly() {
         quests: QuestData,
         waypoints: WaypointData,
         npcs: NpcData,
-        attributes: AttributeData,
+        attributes: AttributeData::new(
+            PermanentStats::new(25, 20, 40, 15, 0, 0),
+            DynamicStats::new(
+                U24F8::lit("73.8245"),
+                U24F8::lit("106"),
+                U24F8::lit("23.5"),
+                U24F8::lit("19.5"),
+                U24F8::lit("107"),
+                U24F8::lit("107"),
+            ),
+            RankStats::new(4, 6595, 55, 0),
+        ),
         skills: SkillData,
         items: ItemData,
     };
     assert_eq!(expected_save, save);
 
     // attributes: 25 20 40 15
-    // life 73/119
+    // life 73/119 (106)
     // mana 23/23
     // level 4
     // exp: 6595/7875
@@ -127,7 +121,7 @@ fn sacrifice_paladin_is_parsed_correctly() {
 }
 
 #[test]
-fn tiger_assassin_is_parsed_correctly() {
+fn v113d_tiger_assassin_level_5_is_parsed_correctly() {
     let file = saves::normal::TIGER_ASSASSIN_LEVEL_5;
     let save = CharacterSave::read(file.bytes).unwrap();
     let expected_save = CharacterSave {
@@ -139,22 +133,8 @@ fn tiger_assassin_is_parsed_correctly() {
             progression: CharacterProgression::None,
             active_weapon_set: CharacterActiveWeaponSet::WeaponSet2,
             menu_level: 5,
-            menu_appearance: CharacterMenuAppearance([
-                // TODO
-                255, 2, 1, 1, 1, 4, 255, 79, 2, 2, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-                255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-            ]),
-            skill_shortcuts: CharacterSkillShortcuts::Long {
-                // TODO
-                keyboard: [
-                    0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
-                    0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
-                ],
-                lmb: 0x0000,
-                rmb: 0xFE,
-                lmb_switch: 0x0000,
-                rmb_switch: 0xFE,
-            },
+            menu_appearance: CharacterMenuAppearance,
+            skill_shortcuts: CharacterSkillShortcuts,
             last_played_at: Some(1776850490),
         },
         location: LocationData::new(
@@ -171,14 +151,28 @@ fn tiger_assassin_is_parsed_correctly() {
         quests: QuestData,
         waypoints: WaypointData,
         npcs: NpcData,
-        attributes: AttributeData,
+        attributes: AttributeData::new(
+            PermanentStats::default(),
+            DynamicStats::default(),
+            RankStats::default(),
+            // PermanentStats::new(20, 20, 40, 25, 0, 0),
+            // DynamicStats::new(
+            //     U24F8::lit("126.0"),
+            //     U24F8::lit("118.0"),
+            //     U24F8::lit("31.0"),
+            //     U24F8::lit("31.0"),
+            //     U24F8::lit("0.0"),
+            //     U24F8::lit("0.0"),
+            // ),
+            // RankStats::new(5, 13115, 757, 111),
+        ),
         skills: SkillData,
         items: ItemData,
     };
     assert_eq!(expected_save, save);
 
     // attributes: 20 20 40 25
-    // life 126/126 (base:123)
+    // life 126/126 (base:118)
     // mana 31/31
     // level 5
     // exp: 13115/14175

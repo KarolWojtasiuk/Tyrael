@@ -56,20 +56,7 @@ pub enum CharacterActiveWeaponSet {
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct CharacterMenuAppearance(pub [u8; 32]);
+pub struct CharacterMenuAppearance;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub enum CharacterSkillShortcuts {
-    Short {
-        keyboard: [u16; 8],
-        lmb: u8,
-        rmb: u8,
-    },
-    Long {
-        keyboard: [u32; 16],
-        lmb: u32,
-        rmb: u32,
-        lmb_switch: u32,
-        rmb_switch: u32,
-    },
-}
+pub struct CharacterSkillShortcuts;

@@ -122,7 +122,7 @@ Value indicating active weapon set.
 - 1 = Weapon Set 2 (Expansion only)
 
 ### Menu level
-Value indicating character level shown in menu, it is not a real character level which is stored in character stats.
+Value indicating character level shown in menu, it is not a real character level which is stored in attribute data.
 
 ### Menu appearance
 Value defines how character looks in menu screen.  
@@ -138,8 +138,8 @@ Value is a skill id mapped to the mouse key.
 ## Location data
 ### Save location
 Value indicates in what difficulty and act the character was saved.  
-In short form first hex is an act (0=Act1 - 4=Act5) and second hex is a difficulty (0=Normal - 2=Hell).  
-In long form each byte is a separate data for difficulty starting from Normal. TODO: how exactly?
+In old form first hex is an act (0=Act1 - 4=Act5) and second hex is a difficulty (0=Normal - 2=Hell).  
+In new form each byte is a separate data for difficulty starting from Normal. TODO: how exactly?
 
 ### Seed
 Random seed generated at game start, determines maps layout.
@@ -165,3 +165,44 @@ TODO: Check other mercenaries
 
 ### Mercenary experience
 Value indicating current mercenary experience.
+
+## Quest data
+TODO
+
+## Waypoint data
+TODO
+
+## NPC data
+TODO
+
+## Attribute data
+### Available attributes
+Bit flags indicating which attribute values are available in the save file.
+|Bit|Attribute|Type|
+|-|-|-|
+|0|Strength|u32|
+|1|Energy|u32|
+|2|Dexterity|u32|
+|3|Vitality|u32|
+|4|Remaining stat points|u32|
+|5|Remaining skill poins|u32|
+|6|Life (current)|u24f8|
+|7|Life (maximum)|u24f8|
+|8|Mana (current)|u24f8|
+|9|Mana (maximum)|u24f8|
+|10|Stamina (current)|u24f8|
+|11|Stamina (maximum)|u24f8|
+|12|Level|u32|
+|13|Experience|u32|
+|14|Inventory gold|u32|
+|15|Stash gold|u32|
+
+### Attribute values
+Array of attribute values in the same order as bits in [available attributes](#available-attributes). Attribute value is only available if bit for that value is set so the size of this array is variable.  
+Each available value is 4 bytes long but these bytes are interpreted as u32 (unsigned integer) or u24f8 (fixed point number with 8 fractional bits) depending on attribute.
+
+## Skill data
+TODO
+
+## Item data
+TODO

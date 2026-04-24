@@ -1,5 +1,7 @@
 #![feature(iter_next_chunk)]
 
+pub use fixed::types::U24F8;
+
 use crate::attribute::AttributeData;
 use crate::character::CharacterData;
 use crate::errors::{ReadCharacterSaveError, WriteCharacterSaveError};

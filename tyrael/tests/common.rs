@@ -17,7 +17,6 @@ pub enum TestSaveGame {
     // Official
     Classic,
     ClassicLoD,
-    Resurrected,
     // Modded
     ProjectDiablo2,
 }
@@ -26,7 +25,6 @@ pub enum TestSaveGame {
 pub enum TestSaveCharacterExpansion {
     Classic,
     LoD,
-    RotW,
 }
 
 #[derive(PartialEq)]
