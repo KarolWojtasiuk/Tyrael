@@ -12,6 +12,7 @@ pub struct TestSave {
     pub name: Option<&'static str>,
 }
 
+#[allow(unused)]
 #[derive(PartialEq)]
 pub enum TestSaveGame {
     // Official
@@ -21,12 +22,14 @@ pub enum TestSaveGame {
     ProjectDiablo2,
 }
 
+#[allow(unused)]
 #[derive(PartialEq)]
 pub enum TestSaveCharacterExpansion {
     Classic,
     LoD,
 }
 
+#[allow(unused)]
 #[derive(PartialEq)]
 pub enum TestSaveCharacterStage {
     Starter,
@@ -34,10 +37,11 @@ pub enum TestSaveCharacterStage {
 }
 
 #[macro_export]
-macro_rules! include_save {
+macro_rules! save {
     ($game:ident, $version:literal, $expansion:ident, $class:ident, $stage:ident) => {
         $crate::common::TestSave {
             bytes: include_bytes!(concat!(
+                "saves/",
                 stringify!($game),
                 "/",
                 $version,
@@ -73,6 +77,7 @@ macro_rules! include_save {
     ($game:ident, $version:literal, $expansion:ident, $class:ident, $stage:ident, $name:literal) => {
         $crate::common::TestSave {
             bytes: include_bytes!(concat!(
+                "saves/",
                 stringify!($game),
                 "/",
                 $version,

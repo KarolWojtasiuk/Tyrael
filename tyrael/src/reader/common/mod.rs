@@ -9,55 +9,53 @@ pub mod quest;
 pub mod skill;
 pub mod waypoint;
 
-use std::slice::Iter;
+use bitter::{BitReader, LittleEndianReader};
 
-use crate::U24F8;
 use crate::errors::ReadCharacterSaveError;
 
 pub trait ReaderExt {
-    fn read_u8(&mut self) -> Result<u8, ReadCharacterSaveError>;
-    fn read_u16(&mut self) -> Result<u16, ReadCharacterSaveError>;
-    fn read_u32(&mut self) -> Result<u32, ReadCharacterSaveError>;
-    fn read_u24f8(&mut self) -> Result<U24F8, ReadCharacterSaveError>;
-    fn read_bytes<const B: usize>(&mut self) -> Result<[u8; B], ReadCharacterSaveError>;
+    fn u8(&mut self) -> Result<u8, ReadCharacterSaveError>;
+    fn u16(&mut self) -> Result<u16, ReadCharacterSaveError>;
+    fn u32(&mut self) -> Result<u32, ReadCharacterSaveError>;
+    fn bits(&mut self, bits: u32) -> Result<u64, ReadCharacterSaveError>;
+    fn bytes<const B: usize>(&mut self) -> Result<[u8; B], ReadCharacterSaveError>;
 }
 
-impl<'a> ReaderExt for Iter<'a, u8> {
-    fn read_u8(&mut self) -> Result<u8, ReadCharacterSaveError> {
-        match self.next() {
-            Some(d) => Ok(*d),
+impl<'a> ReaderExt for LittleEndianReader<'a> {
+    fn u8(&mut self) -> Result<u8, ReadCharacterSaveError> {
+        match self.read_u8() {
+            Some(d) => Ok(d),
             None => Err(ReadCharacterSaveError::UnexpectedEOF),
         }
     }
 
-    fn read_u16(&mut self) -> Result<u16, ReadCharacterSaveError> {
-        match self.next_chunk::<2>() {
-            Ok(d) => Ok(u16::from_le_bytes([*d[0], *d[1]])),
-            Err(_) => Err(ReadCharacterSaveError::UnexpectedEOF),
+    fn u16(&mut self) -> Result<u16, ReadCharacterSaveError> {
+        match self.read_u16() {
+            Some(d) => Ok(d),
+            None => Err(ReadCharacterSaveError::UnexpectedEOF),
         }
     }
 
-    fn read_u32(&mut self) -> Result<u32, ReadCharacterSaveError> {
-        match self.next_chunk::<4>() {
-            Ok(d) => Ok(u32::from_le_bytes([*d[0], *d[1], *d[2], *d[3]])),
-            Err(_) => Err(ReadCharacterSaveError::UnexpectedEOF),
+    fn u32(&mut self) -> Result<u32, ReadCharacterSaveError> {
+        match self.read_u32() {
+            Some(d) => Ok(d),
+            None => Err(ReadCharacterSaveError::UnexpectedEOF),
         }
     }
 
-    fn read_u24f8(&mut self) -> Result<U24F8, ReadCharacterSaveError> {
-        Ok(U24F8::from_bits(self.read_u32()?))
+    fn bits(&mut self, bits: u32) -> Result<u64, ReadCharacterSaveError> {
+        match self.read_bits(bits) {
+            Some(d) => Ok(d),
+            None => Err(ReadCharacterSaveError::UnexpectedEOF),
+        }
     }
 
-    fn read_bytes<const B: usize>(&mut self) -> Result<[u8; B], ReadCharacterSaveError> {
-        match self.next_chunk::<B>() {
-            Ok(d) => {
-                let mut result = [0u8; B];
-                for i in 0..B {
-                    result[i] = *d[i];
-                }
-                Ok(result)
-            }
-            Err(_) => Err(ReadCharacterSaveError::UnexpectedEOF),
+    fn bytes<const B: usize>(&mut self) -> Result<[u8; B], ReadCharacterSaveError> {
+        let mut buffer = [0; B];
+        if self.read_bytes(&mut buffer) {
+            Ok(buffer)
+        } else {
+            Err(ReadCharacterSaveError::UnexpectedEOF)
         }
     }
 }

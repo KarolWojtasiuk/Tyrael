@@ -22,9 +22,6 @@ Known save versions:
 |89|Diablo 2 LoD|1.08|
 |92|Diablo 2 LoD|1.09 - 1.09d|
 |96|Diablo 2 LoD|1.10 - 1.14d|
-|105|Diablo 2 Resurrected RotW|3.0.92198|
-
-This table is missing older Resurrected versions because new Blizzard sucks and you can't easily change game version.
 
 ## Checksum header
 ### File size
@@ -200,6 +197,29 @@ Bit flags indicating which attribute values are available in the save file.
 ### Attribute values
 Array of attribute values in the same order as bits in [available attributes](#available-attributes). Attribute value is only available if bit for that value is set so the size of this array is variable.  
 Each available value is 4 bytes long but these bytes are interpreted as u32 (unsigned integer) or u24f8 (fixed point number with 8 fractional bits) depending on attribute.
+
+### Attributes dictionary
+Repeating sequence of attribute id followed by attribute value, each id is a u9 (unsigned integer) and each value has its own type. Sequence is terminated by special value `511` instead of attribute id, it means there are no more attribute values available. After termination sequence, it is required to skip to the end of current byte (stop bit-reading mode).
+
+|Value|Attribute|Type|
+|-|-|-|
+|0|Strength|u10|
+|1|Energy|u10|
+|2|Dexterity|u10|
+|3|Vitality|u10|
+|4|Remaining stat points|u10|
+|5|Remaining skill poins|u8|
+|6|Life (current)|u13f8|
+|7|Life (maximum)|u13f8|
+|8|Mana (current)|u13f8|
+|9|Mana (maximum)|u13f8|
+|10|Stamina (current)|u13f8|
+|11|Stamina (maximum)|u13f8|
+|12|Level|u7|
+|13|Experience|u32|
+|14|Inventory gold|u25|
+|15|Stash gold|u25|
+|511|Termination|remaining bits|
 
 ## Skill data
 TODO

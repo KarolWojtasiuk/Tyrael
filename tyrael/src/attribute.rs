@@ -31,7 +31,7 @@ pub struct DynamicStats {
 
 #[derive(Constructor, Debug, Default, PartialEq, Clone)]
 pub struct RankStats {
-    pub level: u32,
+    pub level: u8,
     pub experience: u32,
     pub gold: u32,
     pub stashed_gold: u32,

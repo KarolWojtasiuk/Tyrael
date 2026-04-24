@@ -53,43 +53,48 @@ pub fn read_save_location_new(data: [u8; 3]) -> Result<GameSaveLocation, ReadCha
 
 #[cfg(test)]
 mod tests {
+    use test_case::test_case;
+
     use super::*;
 
-    #[test]
-    fn returns_ok_on_valid_save_location_short() {
-        for (d, difficulty, act) in [
-            (0x0000, GameDifficulty::Normal, GameAct::Act1),
-            (0x0001, GameDifficulty::Normal, GameAct::Act2),
-            (0x0002, GameDifficulty::Normal, GameAct::Act3),
-            (0x0003, GameDifficulty::Normal, GameAct::Act4),
-            (0x0004, GameDifficulty::Normal, GameAct::Act5),
-            (0x0010, GameDifficulty::Nightmare, GameAct::Act1),
-            (0x0011, GameDifficulty::Nightmare, GameAct::Act2),
-            (0x0012, GameDifficulty::Nightmare, GameAct::Act3),
-            (0x0013, GameDifficulty::Nightmare, GameAct::Act4),
-            (0x0014, GameDifficulty::Nightmare, GameAct::Act5),
-            (0x0020, GameDifficulty::Hell, GameAct::Act1),
-            (0x0021, GameDifficulty::Hell, GameAct::Act2),
-            (0x0022, GameDifficulty::Hell, GameAct::Act3),
-            (0x0023, GameDifficulty::Hell, GameAct::Act4),
-            (0x0024, GameDifficulty::Hell, GameAct::Act5),
-        ] {
-            assert_eq!(
-                Ok(GameSaveLocation::new(difficulty, act)),
-                read_save_location_old(d)
-            );
-        }
+    #[test_case(0x0000, GameDifficulty::Normal, GameAct::Act1)]
+    #[test_case(0x0001, GameDifficulty::Normal, GameAct::Act2)]
+    #[test_case(0x0002, GameDifficulty::Normal, GameAct::Act3)]
+    #[test_case(0x0003, GameDifficulty::Normal, GameAct::Act4)]
+    #[test_case(0x0004, GameDifficulty::Normal, GameAct::Act5)]
+    #[test_case(0x0010, GameDifficulty::Nightmare, GameAct::Act1)]
+    #[test_case(0x0011, GameDifficulty::Nightmare, GameAct::Act2)]
+    #[test_case(0x0012, GameDifficulty::Nightmare, GameAct::Act3)]
+    #[test_case(0x0013, GameDifficulty::Nightmare, GameAct::Act4)]
+    #[test_case(0x0014, GameDifficulty::Nightmare, GameAct::Act5)]
+    #[test_case(0x0020, GameDifficulty::Hell, GameAct::Act1)]
+    #[test_case(0x0021, GameDifficulty::Hell, GameAct::Act2)]
+    #[test_case(0x0022, GameDifficulty::Hell, GameAct::Act3)]
+    #[test_case(0x0023, GameDifficulty::Hell, GameAct::Act4)]
+    #[test_case(0x0024, GameDifficulty::Hell, GameAct::Act5)]
+    fn returns_ok_on_valid_save_location_short(
+        data: u16,
+        difficulty: GameDifficulty,
+        act: GameAct,
+    ) {
+        assert_eq!(
+            Ok(GameSaveLocation::new(difficulty, act)),
+            read_save_location_old(data)
+        );
     }
 
-    #[test]
-    fn returns_err_on_invalid_save_location_short() {
-        for d in [0x0005, 0x0030, 0x0017, 0x0029, 0x9900, 0xFFFF] {
-            assert_eq!(
-                Err(ReadCharacterSaveError::InvalidLocationData(
-                    LocationDataError::InvalidSaveLocation(d as u32)
-                )),
-                read_save_location_old(d)
-            )
-        }
+    #[test_case(0x0005)]
+    #[test_case(0x0030)]
+    #[test_case(0x0017)]
+    #[test_case(0x0029)]
+    #[test_case(0x9900)]
+    #[test_case(0xFFFF)]
+    fn returns_err_on_invalid_save_location_short(data: u16) {
+        assert_eq!(
+            Err(ReadCharacterSaveError::InvalidLocationData(
+                LocationDataError::InvalidSaveLocation(data as u32)
+            )),
+            read_save_location_old(data)
+        )
     }
 }

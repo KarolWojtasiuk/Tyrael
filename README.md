@@ -13,5 +13,8 @@ Diablo 2 save parser library
 1. [Install mdBook](https://rust-lang.github.io/mdBook/guide/installation.html)
 2. Run `mdbook build docs` or `mdbook serve docs`
 
+## Features
+`strict` - enables checks for magic values, likely to break mod support
+
 ## License
 Tyrael is free and open-source, all code in this repository is licensed under [GNU GPL v3](/LICENSE.md).

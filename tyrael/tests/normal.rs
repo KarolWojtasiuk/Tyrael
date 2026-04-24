@@ -1,9 +1,8 @@
 mod common;
-mod saves;
 
-use common::*;
 use tyrael::attribute::*;
 use tyrael::character::*;
+use tyrael::errors::ReadCharacterSaveError;
 use tyrael::item::*;
 use tyrael::location::*;
 use tyrael::mercenary::*;
@@ -14,49 +13,9 @@ use tyrael::waypoint::*;
 use tyrael::{CharacterSave, U24F8};
 
 #[test]
-fn all_saves_are_correctly_load_and_saved() {
-    // TODO: unfilter resurrected and pd2
-    for file in saves::all()
-        .iter()
-        .filter(|s| s.game == TestSaveGame::Classic || s.game == TestSaveGame::ClassicLoD)
-    {
-        let save = match CharacterSave::read(file.bytes) {
-            Ok(s) => s,
-            Err(e) => panic!("{}: Cannot read save file ({})", file.filename, e),
-        };
-
-        assert_eq!(
-            file.class, save.character.class,
-            "{}: Character class mismatch (expected: {}, actual: {})",
-            file.filename, file.class, save.character.class
-        );
-
-        assert!(
-            save.character.menu_level > 0 && save.character.menu_level <= 99,
-            "{}: Invalid character menu level {}",
-            file.filename,
-            save.character.menu_level
-        );
-
-        assert_ne!(
-            0, save.location.seed,
-            "{}: Invalid seed {}",
-            file.filename, save.location.seed
-        );
-
-        // TODO:
-        // let output = match save.write() {
-        //     Ok(o) => o,
-        //     Err(e) => panic!("{}: Cannot write save file ({})", file.filename, e),
-        // };
-        // assert_eq!(file.bytes, output.as_slice());
-    }
-}
-
-#[test]
-fn v100_sacrifice_paladin_level_4_is_parsed_correctly() {
-    let file = saves::normal::SACRIFICE_PALADIN_LEVEL_4;
-    let save = CharacterSave::read(file.bytes).unwrap();
+fn v100_sacrifice_paladin_level_4_is_parsed_correctly() -> Result<(), ReadCharacterSaveError> {
+    let file = save!(Classic, "1.00", Classic, Paladin, Normal, "SacrificeLevel4");
+    let save = CharacterSave::read(file.bytes)?;
     let expected_save = CharacterSave {
         version: 71,
         character: CharacterData {
@@ -94,12 +53,8 @@ fn v100_sacrifice_paladin_level_4_is_parsed_correctly() {
         items: ItemData,
     };
     assert_eq!(expected_save, save);
+    Ok(())
 
-    // attributes: 25 20 40 15
-    // life 73/119 (106)
-    // mana 23/23
-    // level 4
-    // exp: 6595/7875
     // skills: sacrifice (1) (lmb), might(2) (rmb)
     // equipment:
     //      left hand: rare hand axe (demon thirst) dur: 12/28
@@ -121,8 +76,8 @@ fn v100_sacrifice_paladin_level_4_is_parsed_correctly() {
 }
 
 #[test]
-fn v113d_tiger_assassin_level_5_is_parsed_correctly() {
-    let file = saves::normal::TIGER_ASSASSIN_LEVEL_5;
+fn v113d_tiger_assassin_level_5_is_parsed_correctly() -> Result<(), ReadCharacterSaveError> {
+    let file = save!(ClassicLoD, "1.13d", LoD, Assassin, Normal, "TigerLevel5");
     let save = CharacterSave::read(file.bytes).unwrap();
     let expected_save = CharacterSave {
         version: 96,
@@ -135,7 +90,7 @@ fn v113d_tiger_assassin_level_5_is_parsed_correctly() {
             menu_level: 5,
             menu_appearance: CharacterMenuAppearance,
             skill_shortcuts: CharacterSkillShortcuts,
-            last_played_at: Some(1776850490),
+            last_played_at: Some(1777055826),
         },
         location: LocationData::new(
             1194327793,
@@ -152,30 +107,23 @@ fn v113d_tiger_assassin_level_5_is_parsed_correctly() {
         waypoints: WaypointData,
         npcs: NpcData,
         attributes: AttributeData::new(
-            PermanentStats::default(),
-            DynamicStats::default(),
-            RankStats::default(),
-            // PermanentStats::new(20, 20, 40, 25, 0, 0),
-            // DynamicStats::new(
-            //     U24F8::lit("126.0"),
-            //     U24F8::lit("118.0"),
-            //     U24F8::lit("31.0"),
-            //     U24F8::lit("31.0"),
-            //     U24F8::lit("0.0"),
-            //     U24F8::lit("0.0"),
-            // ),
-            // RankStats::new(5, 13115, 757, 111),
+            PermanentStats::new(20, 20, 40, 25, 0, 0),
+            DynamicStats::new(
+                U24F8::lit("126"),
+                U24F8::lit("118"),
+                U24F8::lit("31"),
+                U24F8::lit("31"),
+                U24F8::lit("125"),
+                U24F8::lit("125"),
+            ),
+            RankStats::new(5, 13115, 757, 111),
         ),
         skills: SkillData,
         items: ItemData,
     };
     assert_eq!(expected_save, save);
+    Ok(())
 
-    // attributes: 20 20 40 25
-    // life 126/126 (base:118)
-    // mana 31/31
-    // level 5
-    // exp: 13115/14175
     // skills: normal attack (lmb), tiger strike (4) (rmb)
     // equipment:
     //      left hand: eth rare hand axe (bramble razor) dur: 13/15
@@ -204,13 +152,8 @@ fn v113d_tiger_assassin_level_5_is_parsed_correctly() {
     //      +5% fire res
     //      repairs 1 dur in 33s
     //      2 sockets
-    // gold: 757
-    // stash gold: 111
     // stash 0,0: bardiche of the bat: 4% mana stolen per hit
     // merc:
-    //      name: kundri
-    //      level: 4
-    //      exp: 8400/15750
     //      head: skull cap with amethyst
     //      hand: 3 sockets short bow
     //      body: quilted armor

@@ -1,5 +1,3 @@
-#![feature(iter_next_chunk)]
-
 pub use fixed::types::U24F8;
 
 use crate::attribute::AttributeData;
@@ -43,7 +41,7 @@ pub struct CharacterSave {
 
 impl CharacterSave {
     pub fn read(bytes: &[u8]) -> Result<Self, ReadCharacterSaveError> {
-        reader::read_character_save(&mut bytes.iter())
+        reader::read_character_save(bytes)
     }
 
     pub fn write(&self) -> Result<Vec<u8>, WriteCharacterSaveError> {

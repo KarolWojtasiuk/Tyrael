@@ -21,7 +21,7 @@ pub enum ReadCharacterSaveError {
     #[error("invalid NPC data ({0})")]
     InvalidNpcData(#[from] NpcDataError),
     #[error("invalid attribute data ({0})")]
-    InvalidAttributeNpcData(#[from] AttributeDataError),
+    InvalidAttributeData(#[from] AttributeDataError),
     #[error("invalid skill data ({0})")]
     InvalidSkillData(#[from] SkillDataError),
     #[error("invalid item data ({0})")]
@@ -111,8 +111,10 @@ pub enum NpcDataError {}
 
 #[derive(Error, Debug, PartialEq)]
 pub enum AttributeDataError {
-    #[error("invalid attribute (bit: {bit}, value: {value})")]
-    UnknownAttribute { bit: u8, value: u32 },
+    #[error("unknown attribute id ({_0})")]
+    UnknownAttribute(u16),
+    #[error("invalid level ({_0})")]
+    InvalidLevel(u32),
 }
 
 #[derive(Error, Debug, PartialEq)]
