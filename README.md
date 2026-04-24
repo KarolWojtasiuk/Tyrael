@@ -1,8 +1,18 @@
 # Tyrael
 Diablo 2 save parser library
 
-> [!WARNING]
-> This project is in early stage of development!
+## State
+|Feature|Classic Diablo 2|Classic Diablo 2 LoD|Diablo 2 Resurrected|
+|-|-|-|-|
+|Character data|✅ Done|✅ Done|🛑 To Do|
+|Location data|🛑 To Do|🚧 In Progress|🛑 To Do|
+|Quest data|🛑 To Do|🛑 To Do|🛑 To Do|
+|Waypoint data|🛑 To Do|🛑 To Do|🛑 To Do|
+|NPC data|🛑 To Do|🛑 To Do|🛑 To Do|
+|Attribute data|✅ Done|✅ Done|🛑 To Do|
+|Skill data|🛑 To Do|🛑 To Do|🛑 To Do|
+|Item data|🛑 To Do|🛑 To Do|🛑 To Do|
+|Shared stash|🛑 To Do|🛑 To Do|🛑 To Do|
 
 ## Building
 ### Library
