@@ -1,3 +1,3 @@
 # Tyrael
 
-Diablo 2 save parser library
+{{#include ../../README.md:2:}}

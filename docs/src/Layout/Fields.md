@@ -1,20 +1,27 @@
 # Fields
 
 ## General
+
 ### Magic value
+
 Unknown value with no information available on the internet, generally has a constant value for a given save version.
 
-### Timestamp
-Value indicating when character was last played/saved, value is stored as unix timestamp.
+### Section header
+
+Special kind of [magic value](#magic-value) always present at the section start.
 
 ## Version header
+
 ### Signature
+
 Must always have value `0xAA55AA55` for the file to be a valid Diablo 2 save file.
 
 ### Version
+
 Version of the save file, this is separate from the game version, but one game version is always using single save version.
 
 Known save versions:
+
 |Save version|Game|Game version|
 |-|-|-|
 |71|Diablo 2|1.00 - 1.06b|
@@ -24,18 +31,24 @@ Known save versions:
 |96|Diablo 2 LoD|1.10 - 1.14d|
 
 ## Checksum header
+
 ### File size
+
 Save file size in bytes.
 
 ### Checksum
+
 Save file checksum, if value is invalid, Diablo will not load that character.
 To calculate checksum set this field to 0 and use algorithm.  
 TODO: algorithm
 
 ## Character data
+
 ### Character name
+
 Character name padded with null bytes at the end.  
 Rules:
+
 - Must have at least 2 characters
 - Must have at most 15 characters
 - Must not contain invalid characters (valid: a-z, A-Z, -, _)
@@ -46,7 +59,9 @@ Rules:
 - Must not contain any other character than null after first null byte
 
 ### Character class
+
 Value indicating character class.  
+
 |Value|Class|
 |-|-|
 |0|Amazon|
@@ -59,7 +74,9 @@ Value indicating character class.
 |?|Warlock|
 
 ### Character status
+
 Bit flags indicating character status.
+
 |Bit|Name|Value|
 |-|-|-|
 |0|Unknown|Always 0|
@@ -72,18 +89,20 @@ Bit flags indicating character status.
 |7|Unknown|Always 0|
 
 ### Character progression
+
 Value indicating number of bosses killed. Used for determining character title and which difficulty you can play.
 Values slightly differ between Classic and Expansion mode.
 
 #### Classic
+
 In classic mode value is incremented after every act boss.
 
 |Value|Meaning|Title|Hardcore Title|
 |-|-|-|-|
-|0|Before killing Andariel on Normal difficulty||
-|1|After killing Andariel on Normal difficulty||
-|2|After killing Duriel on Normal difficulty||
-|3|After killing Mephisto on Normal difficulty||
+|0|Before killing Andariel on Normal difficulty|||
+|1|After killing Andariel on Normal difficulty|||
+|2|After killing Duriel on Normal difficulty|||
+|3|After killing Mephisto on Normal difficulty|||
 |4|After killing Diablo on Normal difficulty|Sir / Dame|Count / Countess|
 |5|After killing Andariel on Nightmare difficulty|Sir / Dame|Count / Countess|
 |6|After killing Duriel on Nightmare difficulty|Sir / Dame|Count / Countess|
@@ -95,14 +114,15 @@ In classic mode value is incremented after every act boss.
 |12|After killing Diablo on Hell difficulty|Baron / Baroness|King / Queen|
 
 #### Expansion
-In expansion mode value is incremented after Andarial/Duriel/Mephisto by 1 and after Baal by 2 so it skips one value for every difficulty.
+
+In expansion mode value is incremented after Andariel/Duriel/Mephisto by 1 and after Baal by 2 so it skips one value for every difficulty.
 
 |Value|Meaning|Title|Hardcore Title|
 |-|-|-|-|
-|0|Before killing Andariel on Normal difficulty||
-|1|After killing Andariel on Normal difficulty||
-|2|After killing Duriel on Normal difficulty||
-|3|After killing Mephisto on Normal difficulty||
+|0|Before killing Andariel on Normal difficulty|||
+|1|After killing Andariel on Normal difficulty|||
+|2|After killing Duriel on Normal difficulty|||
+|3|After killing Mephisto on Normal difficulty|||
 |5|After killing Baal on Normal difficulty|Slayer|Destroyer|
 |6|After killing Andariel on Nightmare difficulty|Slayer|Destroyer|
 |7|After killing Duriel on Nightmare difficulty|Slayer|Destroyer|
@@ -114,67 +134,93 @@ In expansion mode value is incremented after Andarial/Duriel/Mephisto by 1 and a
 |15|After killing Baal on Hell difficulty|Patriarch / Matriarch|Guardian|
 
 ### Active weapon set
+
 Value indicating active weapon set.  
+
 - 0 = Weapon Set 1  
 - 1 = Weapon Set 2 (Expansion only)
 
 ### Menu level
+
 Value indicating character level shown in menu, it is not a real character level which is stored in attribute data.
 
+### Timestamp
+
+Value indicating when character was last played/saved, value is stored as unix timestamp.
+
 ### Menu appearance
+
 Value defines how character looks in menu screen.  
 TODO
 
 ## Skill shortcuts
+
 ### Keyboard skills
+
 Array mapping keyboard key to skill, index is a key and value contains skill id.  
 
 ### Mouse skill
+
 Value is a skill id mapped to the mouse key.
 
-## Location data
 ### Save location
+
 Value indicates in what difficulty and act the character was saved.  
 In old form first hex is an act (0=Act1 - 4=Act5) and second hex is a difficulty (0=Normal - 2=Hell).  
 In new form each byte is a separate data for difficulty starting from Normal. TODO: how exactly?
 
 ### Seed
+
 Random seed generated at game start, determines maps layout.
 
 ## Mercenary data
+
 ### Mercenary dead
+
 Value indicating if mercenary is dead, 0=Alive and 1=Dead.
 
 ### Mercenary seed
+
 TODO: one per mercenary or game?
 
 ### Mercenary name ID
+
 Value indicating mercenary name.  
 TODO: Where this ID points to
 
 ### Mercenary kind
+
 Value indicating mercenary kind.  
+
 |Value|Kind|
 |-|-|
 |0|None|
 |1|Act 1|
+
 TODO: Check other mercenaries
 
 ### Mercenary experience
+
 Value indicating current mercenary experience.
 
 ## Quest data
+
 TODO
 
 ## Waypoint data
+
 TODO
 
 ## NPC data
+
 TODO
 
 ## Attribute data
+
 ### Available attributes
+
 Bit flags indicating which attribute values are available in the save file.
+
 |Bit|Attribute|Type|
 |-|-|-|
 |0|Strength|u32|
@@ -195,10 +241,12 @@ Bit flags indicating which attribute values are available in the save file.
 |15|Stash gold|u32|
 
 ### Attribute values
+
 Array of attribute values in the same order as bits in [available attributes](#available-attributes). Attribute value is only available if bit for that value is set so the size of this array is variable.  
 Each available value is 4 bytes long but these bytes are interpreted as u32 (unsigned integer) or u24f8 (fixed point number with 8 fractional bits) depending on attribute.
 
 ### Attributes dictionary
+
 Repeating sequence of attribute id followed by attribute value, each id is a u9 (unsigned integer) and each value has its own type. Sequence is terminated by special value `511` instead of attribute id, it means there are no more attribute values available. After termination sequence, it is required to skip to the end of current byte (stop bit-reading mode).
 
 |Value|Attribute|Type|
@@ -222,7 +270,9 @@ Repeating sequence of attribute id followed by attribute value, each id is a u9 
 |511|Termination|remaining bits|
 
 ## Skill data
+
 TODO
 
 ## Item data
+
 TODO

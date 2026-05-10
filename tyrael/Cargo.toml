@@ -12,12 +12,17 @@ categories = ["games", "parsing"]
 
 [dependencies]
 bitter = "0.9.0"
-derive_more = { version = "2.1.1", features = ["constructor", "display"] }
+derive_more = { version = "2.1.1", features = [
+  "constructor",
+  "display",
+  "error",
+  "from"
+] }
 fixed = "1.31.0"
-thiserror = "2.0.18"
 
 [dev-dependencies]
+paste = "1.0.15"
 test-case = "3.3.1"
 
 [features]
-strict = []  # enables checks for magic values, likely to break mod support
+strict = []  # enables checks for magic values and removes mod support
